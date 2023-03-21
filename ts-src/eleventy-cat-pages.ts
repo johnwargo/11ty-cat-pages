@@ -8,7 +8,7 @@
 
 // TODO: Prompt the user before creating the config file
 // TODO: Import package.json file for version number
-// TODO: Write all output to a file
+// TODO: Write all log output to a file
 
 import fs from 'fs-extra';
 import path from 'path';
