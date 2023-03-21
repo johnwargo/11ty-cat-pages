@@ -1,0 +1,8 @@
+# folders
+ts-src/
+src/
+
+# files
+package-lock.json
+tsconfig.json
+.eleventy.js
