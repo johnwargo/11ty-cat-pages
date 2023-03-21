@@ -243,6 +243,10 @@ validateConfig(validations)
   .then((res: ProcessResult) => {
     if (res.result) {
 
+      // read the template file
+      log.info(`Reading template file ${configObject.templateFileName}`);
+      let templateFile = fs.readFileSync(configObject.templateFileName, 'utf8');
+
       let categories: CategoryRecord[] = [];
       // Read the existing categories file
       let categoryFile = path.join(process.cwd(), configObject.dataFileName);
@@ -266,16 +270,17 @@ validateConfig(validations)
       log.info(`Located ${fileList.length} files\n`);
       if (debugMode) console.dir(fileList);
 
+      // build the categories list
       categories = buildCategoryList(categories, fileList, debugMode);
-      if (categories.length < 1) {
-        log.error('No categories found in posts, exiting');
-        process.exit(0);
+      // do we have any categories?
+      if (categories.length > 0) {
+        // Delete any with a count of 0
+        log.info('Deleting unused categories (from previous runs)');
+        categories = categories.filter((item) => item.count > 0);
       }
-
-      // TODO: Delete all categories with count=0
-
       log.info(`Identified ${categories.length} categories\n`);
       categories = categories.sort(compareFunction);
+      if (debugMode) console.table(categories);
 
       var outputPath: string = path.join(process.cwd(), configObject.dataFileName);
       log.info(`Writing categories list to ${outputPath}`);
@@ -287,20 +292,20 @@ validateConfig(validations)
         process.exit(1);
       }
 
-      //     // empty the categories folder, just in case there are old categories there
-      //     const categoriesFolder = path.join(process.cwd(), 'categories');
-      //     log.debug(`\nEmptying categories folder: ${categoriesFolder}`);
-      //     fs.emptyDirSync(categoriesFolder);
+      // empty the categories folder, just in case there are old categories there
+      const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
+      log.debug(`\nEmptying categories folder: ${categoriesFolder}`);
+      fs.emptyDirSync(categoriesFolder);
 
-      //     // create separate pages for each category
-      //     categories.forEach(function (item) {
-      //       if (item.category === "")
-      //         return;
-      //       const content = `---\nlayout: category\ncategory: ${item.category}\n---\n`;
-      //       const catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
-      //       log.debug(`Writing category page: ${catPage}`);
-      //       fs.writeFileSync(catPage, content);
-      //     });
+      // create separate pages for each category
+      categories.forEach(function (item) {
+        // why would this ever happen?
+        if (item.category === "")
+          return;        
+        let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+        log.debug(`Writing category page: ${catPage}`);
+        fs.writeFileSync(catPage, templateFile);
+      });
 
     } else {
       log.error(res.message);

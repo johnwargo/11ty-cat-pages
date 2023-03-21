@@ -57,14 +57,14 @@ function getAllFiles(dirPath, arrayOfFiles) {
     });
     return arrayOfFiles;
 }
-function getFileList(filePath, debugMode = false) {
+function getFileList(filePath, debugMode) {
     if (debugMode)
         console.log();
     log.info('Building file list...');
     log.debug(`filePath: ${filePath}`);
     return getAllFiles(filePath, []);
 }
-function buildCategoryList(categories, fileList, debugMode = false) {
+function buildCategoryList(categories, fileList, debugMode) {
     if (debugMode)
         console.log();
     log.info('Building category list...');
@@ -179,19 +179,23 @@ const validations = [
 validateConfig(validations)
     .then((res) => {
     if (res.result) {
+        log.info(`Reading template file ${configObject.templateFileName}`);
+        let templateFile = fs.readFileSync(configObject.templateFileName, 'utf8');
         let categories = [];
         let categoryFile = path.join(process.cwd(), configObject.dataFileName);
         if (fs.existsSync(categoryFile)) {
             log.info(`Reading existing categories file ${configObject.dataFileName}`);
             let categoryData = fs.readFileSync(categoryFile, 'utf8');
             categories = JSON.parse(categoryData);
+            if (categories.length > 0)
+                categories.forEach((item) => item.count = 0);
             if (debugMode)
                 console.table(categories);
         }
         else {
             log.info('Category data file not found, will create a new one');
         }
-        fileList = getFileList(path.join(process.cwd(), configObject.postsFolder), debugMode);
+        fileList = getFileList(configObject.postsFolder, debugMode);
         if (fileList.length < 1) {
             log.error('\nNo Post files found in the project, exiting');
             process.exit(0);
@@ -200,10 +204,34 @@ validateConfig(validations)
         if (debugMode)
             console.dir(fileList);
         categories = buildCategoryList(categories, fileList, debugMode);
-        if (categories.length < 1) {
-            log.error('No categories found in posts, exiting');
-            process.exit(0);
+        if (categories.length > 0) {
+            log.info('Deleting unused categories (from previous runs)');
+            categories = categories.filter((item) => item.count > 0);
         }
+        log.info(`Identified ${categories.length} categories\n`);
+        categories = categories.sort(compareFunction);
+        if (debugMode)
+            console.table(categories);
+        var outputPath = path.join(process.cwd(), configObject.dataFileName);
+        log.info(`Writing categories list to ${outputPath}`);
+        try {
+            fs.writeFileSync(outputPath, JSON.stringify(categories, null, 2), 'utf8');
+        }
+        catch (err) {
+            console.log('Error writing file');
+            console.error(err);
+            process.exit(1);
+        }
+        const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
+        log.debug(`\nEmptying categories folder: ${categoriesFolder}`);
+        fs.emptyDirSync(categoriesFolder);
+        categories.forEach(function (item) {
+            if (item.category === "")
+                return;
+            let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+            log.debug(`Writing category page: ${catPage}`);
+            fs.writeFileSync(catPage, templateFile);
+        });
     }
     else {
         log.error(res.message);
