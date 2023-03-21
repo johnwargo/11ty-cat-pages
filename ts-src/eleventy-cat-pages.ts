@@ -7,8 +7,8 @@
  */
 
 // TODO: Prompt the user before creating the config file
-// TODO: Import package.json file for version number
 // TODO: Write all log output to a file
+// TODO: Import package.json file for version number
 
 import fs from 'fs-extra';
 import path from 'path';
@@ -23,11 +23,11 @@ import { CategoryRecord, ConfigObject, ConfigValidation, ProcessResult } from '.
 
 const APP_NAME = '\nEleventy Category File Generator';
 const APP_AUTHOR = 'by John M. Wargo (https://johnwargo.com)';
-const UNCATEGORIZED_STRING = 'Uncategorized';
 const APP_CONFIG_FILE = '11ty-cat-pages.json';
 const DATA_FILE = 'category-meta.json';
 const ELEVENTY_CONFIG_FILE = '.eleventy.js';
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
+const UNCATEGORIZED_STRING = 'Uncategorized';
 
 var categories: CategoryRecord[] = [];
 var fileList: String[] = [];
@@ -267,7 +267,7 @@ validateConfig(validations)
         process.exit(0);
       }
 
-      log.info(`Located ${fileList.length} files\n`);
+      log.info(`Located ${fileList.length} files`);
       if (debugMode) console.dir(fileList);
 
       // build the categories list
@@ -278,7 +278,7 @@ validateConfig(validations)
         log.info('Deleting unused categories (from previous runs)');
         categories = categories.filter((item) => item.count > 0);
       }
-      log.info(`Identified ${categories.length} categories\n`);
+      log.info(`Identified ${categories.length} categories`);
       categories = categories.sort(compareFunction);
       if (debugMode) console.table(categories);
 
@@ -294,7 +294,7 @@ validateConfig(validations)
 
       // empty the categories folder, just in case there are old categories there
       const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
-      log.debug(`\nEmptying categories folder: ${categoriesFolder}`);
+      log.debug(`Emptying categories folder: ${categoriesFolder}`);
       fs.emptyDirSync(categoriesFolder);
 
       // create separate pages for each category
@@ -306,13 +306,12 @@ validateConfig(validations)
         log.debug(`Writing category page: ${catPage}`);
         fs.writeFileSync(catPage, templateFile);
       });
-
     } else {
       log.error(res.message);
-      process.exit(0);
+      process.exit(1);
     }
   })
   .catch((err) => {
     log.error(err);
-    process.exit(0);
+    process.exit(1);
   });
