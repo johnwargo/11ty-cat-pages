@@ -19,8 +19,8 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc && node 11ty-cat-pages.js -d",
-    "start": "tsc && node 11ty-cat-pages.js"
+    "dev": "tsc && node eleventy-cat-pages.js -d",
+    "start": "tsc && node eleventy-cat-pages.js"
   },
   "dependencies": {
     "cli-logger": "^0.5.40",
