@@ -84,7 +84,7 @@ function getAllFiles(dirPath: string, arrayOfFiles: string[]) {
   return arrayOfFiles
 }
 
-function getFileList(filePath: string, debugMode: boolean = false): String[] {
+function getFileList(filePath: string, debugMode: boolean): String[] {
   if (debugMode) console.log();
   log.info('Building file list...');
   log.debug(`filePath: ${filePath}`);
@@ -94,7 +94,7 @@ function getFileList(filePath: string, debugMode: boolean = false): String[] {
 function buildCategoryList(
   categories: CategoryRecord[],
   fileList: String[],
-  debugMode: boolean = false
+  debugMode: boolean
 ): CategoryRecord[] {
 
   if (debugMode) console.log();
@@ -255,7 +255,7 @@ validateConfig(validations)
         log.info('Category data file not found, will create a new one');
       }
 
-      fileList = getFileList(path.join(process.cwd(), configObject.postsFolder), debugMode);
+      fileList = getFileList(configObject.postsFolder, debugMode);
       if (fileList.length < 1) {
         log.error('\nNo Post files found in the project, exiting');
         process.exit(0);
