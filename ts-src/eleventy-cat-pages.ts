@@ -250,6 +250,8 @@ validateConfig(validations)
         log.info(`Reading existing categories file ${configObject.dataFileName}`);
         let categoryData = fs.readFileSync(categoryFile, 'utf8');
         categories = JSON.parse(categoryData);
+        // zero out all of the categories
+        if (categories.length > 0) categories.forEach((item) => item.count = 0);
         if (debugMode) console.table(categories);
       } else {
         log.info('Category data file not found, will create a new one');
@@ -270,18 +272,20 @@ validateConfig(validations)
         process.exit(0);
       }
 
-      //     log.info(`Identified ${categories.length} categories\n`);
+      // TODO: Delete all categories with count=0
 
-      //     categories = categories.sort(compareFunction);
+      log.info(`Identified ${categories.length} categories\n`);
+      categories = categories.sort(compareFunction);
 
-      //     var outputPath: string = path.join(process.cwd(), configObject.dataFileName);
-      //     log.info(`Writing categories list to ${outputPath}`);
-      //     try {
-      //       fs.writeFileSync(outputPath, JSON.stringify(categories, null, 2), 'utf8');
-      //     } catch (err) {
-      //       console.log('Error writing file');
-      //       console.error(err)
-      //     }
+      var outputPath: string = path.join(process.cwd(), configObject.dataFileName);
+      log.info(`Writing categories list to ${outputPath}`);
+      try {
+        fs.writeFileSync(outputPath, JSON.stringify(categories, null, 2), 'utf8');
+      } catch (err) {
+        console.log('Error writing file');
+        console.error(err)
+        process.exit(1);
+      }
 
       //     // empty the categories folder, just in case there are old categories there
       //     const categoriesFolder = path.join(process.cwd(), 'categories');
