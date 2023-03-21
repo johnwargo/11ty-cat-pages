@@ -136,11 +136,7 @@ if (!fs.existsSync(configFile)) {
     console.dir(err);
     process.exit(1);
   }
-
-  // create the template file
-
   process.exit(0);
 }
 
-
-log.debug('Configuration file located, validating');
+log.info('Configuration file located, validating');

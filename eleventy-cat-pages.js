@@ -90,4 +90,4 @@ if (!fs.existsSync(configFile)) {
     }
     process.exit(0);
 }
-log.debug('Configuration file located, validating');
+log.info('Configuration file located, validating');
