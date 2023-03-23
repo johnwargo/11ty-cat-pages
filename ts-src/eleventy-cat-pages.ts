@@ -6,6 +6,7 @@
  * Created March 20, 2023
  */
 
+// TODO: Convert config file slashes to unix delimeters
 // TODO: Prompt the user before creating the config file
 // TODO: Write all log output to a file
 // TODO: Import package.json file for version number
