@@ -150,6 +150,7 @@ if (!fs.existsSync(configFile)) {
     if (debugMode)
         console.dir(configObject);
     let outputStr = JSON.stringify(configObject, null, 2);
+    outputStr = outputStr.replace(/\\/g, '/');
     log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
     try {
         fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');

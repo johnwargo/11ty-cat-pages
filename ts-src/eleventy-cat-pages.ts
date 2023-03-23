@@ -6,7 +6,6 @@
  * Created March 20, 2023
  */
 
-// TODO: Convert config file slashes to unix delimeters
 // TODO: Prompt the user before creating the config file
 // TODO: Write all log output to a file
 // TODO: Import package.json file for version number
@@ -208,6 +207,9 @@ if (!fs.existsSync(configFile)) {
   let configObject = buildConfigObject();
   if (debugMode) console.dir(configObject);
   let outputStr = JSON.stringify(configObject, null, 2);
+  // replace the backslashes with forward slashes
+  // do this so on windows it would have double backslashes
+  outputStr = outputStr.replace(/\\/g, '/');
   log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
   try {
     fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
