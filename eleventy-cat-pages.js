@@ -6,11 +6,11 @@ import logger from 'cli-logger';
 var log = logger();
 const APP_NAME = '\nEleventy Category File Generator';
 const APP_AUTHOR = 'by John M. Wargo (https://johnwargo.com)';
-const UNCATEGORIZED_STRING = 'Uncategorized';
 const APP_CONFIG_FILE = '11ty-cat-pages.json';
 const DATA_FILE = 'category-meta.json';
 const ELEVENTY_CONFIG_FILE = '.eleventy.js';
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
+const UNCATEGORIZED_STRING = 'Uncategorized';
 var categories = [];
 var fileList = [];
 function compareFunction(a, b) {
@@ -200,7 +200,7 @@ validateConfig(validations)
             log.error('\nNo Post files found in the project, exiting');
             process.exit(0);
         }
-        log.info(`Located ${fileList.length} files\n`);
+        log.info(`Located ${fileList.length} files`);
         if (debugMode)
             console.dir(fileList);
         categories = buildCategoryList(categories, fileList, debugMode);
@@ -208,7 +208,7 @@ validateConfig(validations)
             log.info('Deleting unused categories (from previous runs)');
             categories = categories.filter((item) => item.count > 0);
         }
-        log.info(`Identified ${categories.length} categories\n`);
+        log.info(`Identified ${categories.length} categories`);
         categories = categories.sort(compareFunction);
         if (debugMode)
             console.table(categories);
@@ -223,7 +223,7 @@ validateConfig(validations)
             process.exit(1);
         }
         const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
-        log.debug(`\nEmptying categories folder: ${categoriesFolder}`);
+        log.debug(`Emptying categories folder: ${categoriesFolder}`);
         fs.emptyDirSync(categoriesFolder);
         categories.forEach(function (item) {
             if (item.category === "")
@@ -235,10 +235,10 @@ validateConfig(validations)
     }
     else {
         log.error(res.message);
-        process.exit(0);
+        process.exit(1);
     }
 })
     .catch((err) => {
     log.error(err);
-    process.exit(0);
+    process.exit(1);
 });
