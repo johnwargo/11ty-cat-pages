@@ -1,15 +1,13 @@
 ---
 layout: default
 pagination:
-  data: collections.categories.{{category}}
-  size: 10
-  alias: category
+  data: collections.post
+  size: 20
+  alias: posts
 permalink: "/category/{{ category | slugify }}/index.html"
 eleventyComputed:
   title: "Category: {{ category }}"
 ---
-
-{% assign posts = collections.post | filterByCategory: category %}
 
 <header>
   <h2>{{ title }}</h2>

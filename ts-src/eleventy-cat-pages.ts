@@ -12,7 +12,8 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import { parseAllDocuments } from 'yaml';
+import YAML from 'yaml'
+// import { parseAllDocuments } from 'yaml';
 
 //@ts-ignore
 import logger from 'cli-logger';
@@ -28,6 +29,7 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_CONFIG_FILE = '.eleventy.js';
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
+const pattern = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/;
 
 var categories: CategoryRecord[] = [];
 var fileList: String[] = [];
@@ -104,7 +106,7 @@ function buildCategoryList(
     // Read the post file
     var postFile = fs.readFileSync(fileName.toString(), 'utf8');
     // Get the first YAML block from the file
-    var content = JSON.parse(JSON.stringify(parseAllDocuments(postFile, { logLevel: 'silent' })));
+    var content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'silent' })));
     // Does the post have a category?
     if (content[0].categories) {
       // Yes, get the categories property
@@ -249,6 +251,12 @@ validateConfig(validations)
       // read the template file
       log.info(`Reading template file ${configObject.templateFileName}`);
       let templateFile = fs.readFileSync(configObject.templateFileName, 'utf8');
+      // get the YAML frontmatter
+      let templateDoc = YAML.parseAllDocuments(templateFile, { logLevel: 'silent' });
+      // convert the YAML frontmatter to a JSON object
+      let frontmatter = JSON.parse(JSON.stringify(templateDoc))[0];
+      // at this point we have the frontmatter as a JSON object
+      if (debugMode) console.dir(frontmatter);
 
       let categories: CategoryRecord[] = [];
       // Read the existing categories file
@@ -304,7 +312,12 @@ validateConfig(validations)
       categories.forEach(function (item) {
         // why would this ever happen?
         if (item.category === "")
-          return;        
+          return;
+
+        // Process the template frontmatter
+        frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
+        templateFile = templateFile.replace(pattern, YAML.stringify(frontmatter));
+
         let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
         log.debug(`Writing category page: ${catPage}`);
         fs.writeFileSync(catPage, templateFile);
