@@ -29,7 +29,7 @@ const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
 // https://stackoverflow.com/questions/75845110/javascript-regex-to-replace-yaml-frontmatter/75845227#75845227
 // const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
-const YAML_PATTERN =/(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
+const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
 
 // var categories: CategoryRecord[] = [];
 var fileList: String[] = [];
@@ -106,7 +106,14 @@ function buildCategoryList(
     // Read the post file
     var postFile = fs.readFileSync(fileName.toString(), 'utf8');
     // Get the first YAML block from the file
-    var content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'silent' })));
+    var content;
+    if (debugMode) {
+      content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'warn' })));
+    } else {
+      content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'silent' })));
+    }
+    if (debugMode) console.log(content);
+
     // Does the post have a category?
     if (content[0].categories) {
       // Yes, get the categories property
@@ -175,7 +182,7 @@ function buildConfigObject(): ConfigObject {
 }
 
 function replaceFrontmatter(frontMatter: string): string {
-    return frontMatter.replace(YAML_PATTERN, frontMatter);
+  return frontMatter.replace(YAML_PATTERN, frontMatter);
 }
 
 // ====================================
