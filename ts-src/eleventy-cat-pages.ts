@@ -322,6 +322,7 @@ validateConfig(validations)
         if (item.category === "")
           return;
 
+        frontmatter.category = item.category;
         // Process the template frontmatter      
         if (item.category == UNCATEGORIZED_STRING) {
           // the category field is blank
@@ -329,10 +330,8 @@ validateConfig(validations)
         } else {
           frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
         }
-
         // replace the frontmatter in the template file
         templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
-        console.log(templateFile);
 
         let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
         log.info(`Writing category page: ${catPage}`);

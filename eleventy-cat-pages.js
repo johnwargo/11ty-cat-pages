@@ -240,15 +240,14 @@ validateConfig(validations)
         categories.forEach(function (item) {
             if (item.category === "")
                 return;
+            frontmatter.category = item.category;
             if (item.category == UNCATEGORIZED_STRING) {
                 frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`;
             }
             else {
                 frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
             }
-            let output = YAML.stringify(frontmatter);
             templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
-            console.log(templateFile);
             let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
             log.info(`Writing category page: ${catPage}`);
             fs.writeFileSync(catPage, templateFile);
