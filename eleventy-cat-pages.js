@@ -11,8 +11,7 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_CONFIG_FILE = '.eleventy.js';
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-const pattern = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/;
-var categories = [];
+const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/;
 var fileList = [];
 function compareFunction(a, b) {
     if (a.category < b.category) {
@@ -129,6 +128,9 @@ function buildConfigObject() {
         templateFileName: TEMPLATE_FILE
     };
 }
+function replaceFrontmatter(frontMatter) {
+    return frontMatter.replace(YAML_PATTERN, frontMatter);
+}
 console.log(APP_NAME);
 console.log(APP_AUTHOR);
 const myArgs = process.argv.slice(2);
@@ -187,6 +189,10 @@ validateConfig(validations)
         let frontmatter = JSON.parse(JSON.stringify(templateDoc))[0];
         if (debugMode)
             console.dir(frontmatter);
+        if (!frontmatter.pagination) {
+            log.error('The template file does not contain the pagination frontmatter');
+            process.exit(1);
+        }
         let categories = [];
         let categoryFile = path.join(process.cwd(), configObject.dataFileName);
         if (fs.existsSync(categoryFile)) {
@@ -234,12 +240,17 @@ validateConfig(validations)
         categories.forEach(function (item) {
             if (item.category === "")
                 return;
-            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
-            console.log(templateFile);
-            templateFile = templateFile.replace(pattern, YAML.stringify(frontmatter));
+            if (item.category == UNCATEGORIZED_STRING) {
+                frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`;
+            }
+            else {
+                frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
+            }
+            let output = YAML.stringify(frontmatter);
+            templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
             console.log(templateFile);
             let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
-            log.debug(`Writing category page: ${catPage}`);
+            log.info(`Writing category page: ${catPage}`);
             fs.writeFileSync(catPage, templateFile);
         });
     }

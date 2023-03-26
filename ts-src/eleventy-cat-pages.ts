@@ -13,8 +13,6 @@
 import fs from 'fs-extra';
 import path from 'path';
 import YAML from 'yaml'
-// import { parseAllDocuments } from 'yaml';
-
 //@ts-ignore
 import logger from 'cli-logger';
 var log = logger();
@@ -29,9 +27,11 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_CONFIG_FILE = '.eleventy.js';
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-const pattern = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/;
+// https://stackoverflow.com/questions/75845110/javascript-regex-to-replace-yaml-frontmatter/75845227#75845227
+// const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
+const YAML_PATTERN =/(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
 
-var categories: CategoryRecord[] = [];
+// var categories: CategoryRecord[] = [];
 var fileList: String[] = [];
 
 // ====================================
@@ -174,6 +174,10 @@ function buildConfigObject(): ConfigObject {
   }
 }
 
+function replaceFrontmatter(frontMatter: string): string {
+    return frontMatter.replace(YAML_PATTERN, frontMatter);
+}
+
 // ====================================
 // Start Here!
 // ====================================
@@ -257,6 +261,10 @@ validateConfig(validations)
       let frontmatter = JSON.parse(JSON.stringify(templateDoc))[0];
       // at this point we have the frontmatter as a JSON object
       if (debugMode) console.dir(frontmatter);
+      if (!frontmatter.pagination) {
+        log.error('The template file does not contain the pagination frontmatter');
+        process.exit(1);
+      }
 
       let categories: CategoryRecord[] = [];
       // Read the existing categories file
@@ -314,12 +322,20 @@ validateConfig(validations)
         if (item.category === "")
           return;
 
-        // Process the template frontmatter
-        frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
-        templateFile = templateFile.replace(pattern, YAML.stringify(frontmatter));
+        // Process the template frontmatter      
+        if (item.category == UNCATEGORIZED_STRING) {
+          // the category field is blank
+          frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`
+        } else {
+          frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
+        }
 
-        let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
-        log.debug(`Writing category page: ${catPage}`);
+        // replace the frontmatter in the template file
+        templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
+        console.log(templateFile);
+
+        let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+        log.info(`Writing category page: ${catPage}`);
         fs.writeFileSync(catPage, templateFile);
       });
     } else {
