@@ -218,6 +218,7 @@ if (!fs.existsSync(configFile)) {
   // replace the backslashes with forward slashes
   // do this so on windows it would have double backslashes
   outputStr = outputStr.replace(/\\/g, '/');
+  outputStr = outputStr.replaceAll('//', '/');
   log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
   try {
     fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
