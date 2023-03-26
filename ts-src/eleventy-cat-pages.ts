@@ -106,18 +106,14 @@ function buildCategoryList(
     // Read the post file
     var postFile = fs.readFileSync(fileName.toString(), 'utf8');
     // Get the first YAML block from the file
-    var content;
-    if (debugMode) {
-      content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'warn' })));
-    } else {
-      content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'silent' })));
-    }
-    if (debugMode) console.log(content);
-
+    var YAMLDoc: any[] = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });  
+    var content = YAMLDoc[0].toJSON();
+    if (debugMode) console.dir(content);
+    
     // Does the post have a category?
-    if (content[0].categories) {
+    if (content.categories) {
       // Yes, get the categories property
-      var categoriesString = content[0].categories.toString();
+      var categoriesString = content.categories.toString();
     } else {
       categoriesString = UNCATEGORIZED_STRING;
     }
@@ -138,7 +134,6 @@ function buildCategoryList(
         categories[index].count++;
       }
     }
-
   }
   return categories;
 }

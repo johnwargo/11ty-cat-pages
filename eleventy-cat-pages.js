@@ -71,17 +71,12 @@ function buildCategoryList(categories, fileList, debugMode) {
     for (var fileName of fileList) {
         log.debug(`Parsing ${fileName}`);
         var postFile = fs.readFileSync(fileName.toString(), 'utf8');
-        var content;
-        if (debugMode) {
-            content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'warn' })));
-        }
-        else {
-            content = JSON.parse(JSON.stringify(YAML.parseAllDocuments(postFile, { logLevel: 'silent' })));
-        }
+        var YAMLDoc = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
+        var content = YAMLDoc[0].toJSON();
         if (debugMode)
-            console.log(content);
-        if (content[0].categories) {
-            var categoriesString = content[0].categories.toString();
+            console.dir(content);
+        if (content.categories) {
+            var categoriesString = content.categories.toString();
         }
         else {
             categoriesString = UNCATEGORIZED_STRING;
