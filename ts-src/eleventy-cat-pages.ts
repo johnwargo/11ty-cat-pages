@@ -31,7 +31,6 @@ const UNCATEGORIZED_STRING = 'Uncategorized';
 const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
 // const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
 
-// var categories: CategoryRecord[] = [];
 var fileList: String[] = [];
 
 // ====================================
@@ -112,12 +111,11 @@ function buildCategoryList(
 
     // Does the post have a category?
     if (content.categories) {
-      // Yes, get the categories property
       var categoriesString = content.categories.toString();
     } else {
+      // handle posts that don't have a category
       categoriesString = UNCATEGORIZED_STRING;
     }
-
     // split the category list into an array
     var catArray = categoriesString.split(',');
     // loop through the array
@@ -176,9 +174,9 @@ function buildConfigObject(): ConfigObject {
   }
 }
 
-function replaceFrontmatter(frontMatter: string): string {
-  return frontMatter.replace(YAML_PATTERN, frontMatter);
-}
+// function replaceFrontmatter(frontMatter: string): string {
+//   return frontMatter.replace(YAML_PATTERN, frontMatter);
+// }
 
 // ====================================
 // Start Here!
@@ -341,7 +339,7 @@ validateConfig(validations)
           // replace the frontmatter in the template file
           // console.log('1');
           // console.log(templateFile);
-          templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
+          templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter).trim());
           // console.log('2');
           // console.log(templateFile);
 

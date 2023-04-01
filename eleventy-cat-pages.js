@@ -131,9 +131,6 @@ function buildConfigObject() {
         templateFileName: TEMPLATE_FILE
     };
 }
-function replaceFrontmatter(frontMatter) {
-    return frontMatter.replace(YAML_PATTERN, frontMatter);
-}
 console.log(APP_NAME);
 console.log(APP_AUTHOR);
 const myArgs = process.argv.slice(2);
@@ -255,7 +252,7 @@ validateConfig(validations)
                 else {
                     frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
                 }
-                templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
+                templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter).trim());
                 let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
                 log.info(`Writing category page: ${catPage}`);
                 fs.writeFileSync(catPage, templateFile);
