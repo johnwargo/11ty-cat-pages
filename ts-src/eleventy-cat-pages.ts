@@ -325,7 +325,7 @@ validateConfig(validations)
 
         log.debug(`\nProcessing category: ${item.category}`);
         let pos1 = templateFile.search(YAML_PATTERN);
-        console.log(`pos1: ${pos1}`);
+        // console.log(`pos1: ${pos1}`);
         if (pos1 > -1) {
           // We have a match for the YAML frontmatter (which makes sense)
           // replace the category field in the frontmatter
@@ -343,7 +343,7 @@ validateConfig(validations)
           // console.log('2');
           // console.log(templateFile);
 
-          let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+          let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".liquid");
           log.info(`Writing category page: ${catPage}`);
           fs.writeFileSync(catPage, templateFile);
         } else {

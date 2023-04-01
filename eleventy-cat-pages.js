@@ -243,7 +243,6 @@ validateConfig(validations)
                 return;
             log.debug(`\nProcessing category: ${item.category}`);
             let pos1 = templateFile.search(YAML_PATTERN);
-            console.log(`pos1: ${pos1}`);
             if (pos1 > -1) {
                 frontmatter.category = item.category;
                 if (item.category == UNCATEGORIZED_STRING) {
@@ -253,7 +252,7 @@ validateConfig(validations)
                     frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
                 }
                 templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter).trim());
-                let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+                let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".liquid");
                 log.info(`Writing category page: ${catPage}`);
                 fs.writeFileSync(catPage, templateFile);
             }
