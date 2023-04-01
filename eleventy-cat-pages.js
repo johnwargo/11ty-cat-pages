@@ -11,7 +11,7 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_CONFIG_FILE = '.eleventy.js';
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/;
+const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s;
 var fileList = [];
 function compareFunction(a, b) {
     if (a.category < b.category) {
@@ -244,8 +244,10 @@ validateConfig(validations)
         categories.forEach(function (item) {
             if (item.category === "")
                 return;
-            log.debug(`Processing category: ${item.category}`);
-            if (templateFile.search(YAML_PATTERN) > -1) {
+            log.debug(`\nProcessing category: ${item.category}`);
+            let pos1 = templateFile.search(YAML_PATTERN);
+            console.log(`pos1: ${pos1}`);
+            if (pos1 > -1) {
                 frontmatter.category = item.category;
                 if (item.category == UNCATEGORIZED_STRING) {
                     frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`;
@@ -253,17 +255,14 @@ validateConfig(validations)
                 else {
                     frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
                 }
-                console.log('1');
-                console.log(templateFile);
                 templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
-                console.log('2');
-                console.log(templateFile);
                 let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
                 log.info(`Writing category page: ${catPage}`);
                 fs.writeFileSync(catPage, templateFile);
             }
             else {
-                console.log('unable to find frontmatter');
+                log.error('Unable to match frontmatter in template file');
+                process.exit(1);
             }
         });
     }
