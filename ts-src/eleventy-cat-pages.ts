@@ -7,6 +7,7 @@
  */
 
 // TODO: Prompt the user before creating the config file
+// TODO: Add generated file extension to config file or use the same as the source file
 // TODO: Write all log output to a file
 // TODO: Import package.json file for version number
 
