@@ -244,17 +244,27 @@ validateConfig(validations)
         categories.forEach(function (item) {
             if (item.category === "")
                 return;
-            frontmatter.category = item.category;
-            if (item.category == UNCATEGORIZED_STRING) {
-                frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`;
+            log.debug(`Processing category: ${item.category}`);
+            if (templateFile.search(YAML_PATTERN) > -1) {
+                frontmatter.category = item.category;
+                if (item.category == UNCATEGORIZED_STRING) {
+                    frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`;
+                }
+                else {
+                    frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
+                }
+                console.log('1');
+                console.log(templateFile);
+                templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
+                console.log('2');
+                console.log(templateFile);
+                let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+                log.info(`Writing category page: ${catPage}`);
+                fs.writeFileSync(catPage, templateFile);
             }
             else {
-                frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
+                console.log('unable to find frontmatter');
             }
-            templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
-            let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
-            log.info(`Writing category page: ${catPage}`);
-            fs.writeFileSync(catPage, templateFile);
         });
     }
     else {

@@ -106,10 +106,10 @@ function buildCategoryList(
     // Read the post file
     var postFile = fs.readFileSync(fileName.toString(), 'utf8');
     // Get the first YAML block from the file
-    var YAMLDoc: any[] = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });  
+    var YAMLDoc: any[] = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
     var content = YAMLDoc[0].toJSON();
     if (debugMode) console.dir(content);
-    
+
     // Does the post have a category?
     if (content.categories) {
       // Yes, get the categories property
@@ -325,20 +325,32 @@ validateConfig(validations)
         if (item.category === "")
           return;
 
-        frontmatter.category = item.category;
-        // Process the template frontmatter      
-        if (item.category == UNCATEGORIZED_STRING) {
-          // the category field is blank
-          frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`
-        } else {
-          frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
-        }
-        // replace the frontmatter in the template file
-        templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
+        log.debug(`Processing category: ${item.category}`);
+        if (templateFile.search(YAML_PATTERN) > -1) {
 
-        let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
-        log.info(`Writing category page: ${catPage}`);
-        fs.writeFileSync(catPage, templateFile);
+        
+          frontmatter.category = item.category;
+          // Process the template frontmatter      
+          if (item.category == UNCATEGORIZED_STRING) {
+            // the category field is blank
+            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`
+          } else {
+            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
+          }
+          // replace the frontmatter in the template file
+          console.log('1');
+          console.log(templateFile);
+          templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter));
+          console.log('2');
+          console.log(templateFile);
+
+          let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".md");
+          log.info(`Writing category page: ${catPage}`);
+          fs.writeFileSync(catPage, templateFile);
+        } else {
+          console.log('unable to find frontmatter');
+        }
+
       });
     } else {
       log.error(res.message);
