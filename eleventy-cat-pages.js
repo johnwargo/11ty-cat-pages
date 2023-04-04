@@ -11,7 +11,7 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_FILES = ['.eleventy.js', 'eleventy.config.js'];
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s;
+const YAML_PATTERN = /---\n.*?\n---/s;
 var fileList = [];
 var templateExtension;
 function checkEleventyProject() {
@@ -257,15 +257,18 @@ validateConfig(validations)
             if (pos1 > -1) {
                 frontmatter.category = item.category;
                 if (item.category == UNCATEGORIZED_STRING) {
-                    frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`;
+                    frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.length == 0);}`;
                 }
                 else {
-                    frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
+                    frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.includes('${item.category}'));}`;
                 }
-                templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter).trim());
-                let catPage = path.join(categoriesFolder, item.category.toLowerCase().replaceAll(' ', '-') + templateExtension);
-                log.info(`Writing category page: ${catPage}`);
-                fs.writeFileSync(catPage, templateFile);
+                let tmpFrontmatter = JSON.stringify(frontmatter, null, 2);
+                tmpFrontmatter = tmpFrontmatter.replace(`"${frontmatter.pagination.before}"`, frontmatter.pagination.before);
+                tmpFrontmatter = `---js\n${tmpFrontmatter}\n---`;
+                let newFrontmatter = templateFile.replace(YAML_PATTERN, tmpFrontmatter);
+                let outputFileName = path.join(categoriesFolder, item.category.toLowerCase().replaceAll(' ', '-') + templateExtension);
+                log.info(`Writing category page: ${outputFileName}`);
+                fs.writeFileSync(outputFileName, newFrontmatter);
             }
             else {
                 log.error('Unable to match frontmatter in template file');

@@ -27,9 +27,10 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_FILES = ['.eleventy.js', 'eleventy.config.js'];
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-// https://stackoverflow.com/questions/75845110/javascript-regex-to-replace-yaml-frontmatter/75845227#75845227
-const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
 // const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
+// https://stackoverflow.com/questions/75845110/javascript-regex-to-replace-yaml-frontmatter/75845227#75845227
+// const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
+const YAML_PATTERN = /---\n.*?\n---/s
 
 var fileList: String[] = [];
 var templateExtension: string;
@@ -42,10 +43,10 @@ function checkEleventyProject(): boolean {
   log.info('Validating project folder');
   let result = false;
   ELEVENTY_FILES.forEach((file) => {
-    let tmpFile = path.join(process.cwd(), file);    
+    let tmpFile = path.join(process.cwd(), file);
     if (fs.existsSync(tmpFile)) {
       result = true;
-    }    
+    }
   });
   return result;
 }
@@ -341,25 +342,33 @@ validateConfig(validations)
           frontmatter.category = item.category;
           if (item.category == UNCATEGORIZED_STRING) {
             // deal with uncategorized posts differently, categories field is blank
-            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.length == 0);}`
+            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.length == 0);}`
           } else {
-            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`
+            frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.includes('${item.category}'));}`
           }
-          // replace the frontmatter in the template file
-          // console.log('1');
-          // console.log(templateFile);
-          templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter).trim());
-          // console.log('2');
-          // console.log(templateFile);
 
-          let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replaceAll(' ', '-') + templateExtension);
-          log.info(`Writing category page: ${catPage}`);
-          fs.writeFileSync(catPage, templateFile);
+          // convert the frontmatter to JSON format
+          let tmpFrontmatter: string = JSON.stringify(frontmatter, null, 2);
+          // Remove quotes around the `before` callback function
+          tmpFrontmatter = tmpFrontmatter.replace(
+            `"${frontmatter.pagination.before}"`,
+            frontmatter.pagination.before
+          );
+          // add the JSON frontmatter delimiters
+          tmpFrontmatter = `---js\n${tmpFrontmatter}\n---`;
+          // replace the content in the file 
+          let newFrontmatter = templateFile.replace(YAML_PATTERN, tmpFrontmatter);
+          // build the output file name
+          let outputFileName: string = path.join(
+            categoriesFolder,
+            item.category.toLowerCase().replaceAll(' ', '-') + templateExtension
+          );
+          log.info(`Writing category page: ${outputFileName}`);
+          fs.writeFileSync(outputFileName, newFrontmatter);
         } else {
           log.error('Unable to match frontmatter in template file');
           process.exit(1);
         }
-
       });
     } else {
       log.error(res.message);
