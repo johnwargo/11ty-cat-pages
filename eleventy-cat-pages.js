@@ -8,12 +8,23 @@ const APP_NAME = '\nEleventy Category File Generator';
 const APP_AUTHOR = 'by John M. Wargo (https://johnwargo.com)';
 const APP_CONFIG_FILE = '11ty-cat-pages.json';
 const DATA_FILE = 'category-meta.json';
-const ELEVENTY_CONFIG_FILE = '.eleventy.js';
+const ELEVENTY_FILES = ['.eleventy.js', 'eleventy.config.js'];
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
 const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s;
 var fileList = [];
 var templateExtension;
+function checkEleventyProject() {
+    log.info('Validating project folder');
+    let result = false;
+    ELEVENTY_FILES.forEach((file) => {
+        let tmpFile = path.join(process.cwd(), file);
+        if (fs.existsSync(tmpFile)) {
+            result = true;
+        }
+    });
+    return result;
+}
 function compareFunction(a, b) {
     if (a.category < b.category) {
         return -1;
@@ -139,10 +150,8 @@ const debugMode = myArgs.includes('-d');
 log.level(debugMode ? log.DEBUG : log.INFO);
 log.debug('Debug mode enabled\n');
 log.debug(`cwd: ${process.cwd()}`);
-let tmpFile = path.join(process.cwd(), ELEVENTY_CONFIG_FILE);
-log.info('Validating project folder');
-if (!fs.existsSync(tmpFile)) {
-    log.error(`Current folder is not an Eleventy project folder. Unable to locate the '${ELEVENTY_CONFIG_FILE}' file.`);
+if (!checkEleventyProject()) {
+    log.error('Current folder is not an Eleventy project folder.');
     process.exit(1);
 }
 log.debug('Project is an Eleventy project folder');
