@@ -7,7 +7,6 @@
  */
 
 // TODO: Prompt the user before creating the config file
-// TODO: Add generated file extension to config file or use the same as the source file
 // TODO: Write all log output to a file
 // TODO: Import package.json file for version number
 
@@ -33,6 +32,7 @@ const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
 // const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
 
 var fileList: String[] = [];
+var templateExtension: string;
 
 // ====================================
 // Functions
@@ -268,6 +268,8 @@ validateConfig(validations)
         process.exit(1);
       }
 
+      templateExtension = path.extname(configObject.templateFileName);
+
       let categories: CategoryRecord[] = [];
       // Read the existing categories file
       let categoryFile = path.join(process.cwd(), configObject.dataFileName);
@@ -344,7 +346,7 @@ validateConfig(validations)
           // console.log('2');
           // console.log(templateFile);
 
-          let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".liquid");
+          let catPage: string = path.join(categoriesFolder, item.category.toLowerCase().replaceAll(' ', '-') + templateExtension);
           log.info(`Writing category page: ${catPage}`);
           fs.writeFileSync(catPage, templateFile);
         } else {

@@ -13,6 +13,7 @@ const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
 const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s;
 var fileList = [];
+var templateExtension;
 function compareFunction(a, b) {
     if (a.category < b.category) {
         return -1;
@@ -194,6 +195,7 @@ validateConfig(validations)
             log.error('The template file does not contain the pagination frontmatter');
             process.exit(1);
         }
+        templateExtension = path.extname(configObject.templateFileName);
         let categories = [];
         let categoryFile = path.join(process.cwd(), configObject.dataFileName);
         if (fs.existsSync(categoryFile)) {
@@ -252,7 +254,7 @@ validateConfig(validations)
                     frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.categories.includes("${item.category}"));}`;
                 }
                 templateFile = templateFile.replace(YAML_PATTERN, YAML.stringify(frontmatter).trim());
-                let catPage = path.join(categoriesFolder, item.category.toLowerCase().replace(' ', '-') + ".liquid");
+                let catPage = path.join(categoriesFolder, item.category.toLowerCase().replaceAll(' ', '-') + templateExtension);
                 log.info(`Writing category page: ${catPage}`);
                 fs.writeFileSync(catPage, templateFile);
             }
