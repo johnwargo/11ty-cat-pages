@@ -128,7 +128,6 @@ function buildCategoryList(
       var YAMLDoc: any[] = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
       var content = YAMLDoc[0].toJSON();
       if (debugMode) console.dir(content);
-
       // Does the post have a category?
       if (content.categories) {
         var categoriesString = content.categories.toString();
