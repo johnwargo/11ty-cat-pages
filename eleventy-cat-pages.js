@@ -82,28 +82,33 @@ function buildCategoryList(categories, fileList, debugMode) {
     log.info('Building category list...');
     for (var fileName of fileList) {
         log.debug(`Parsing ${fileName}`);
-        var postFile = fs.readFileSync(fileName.toString(), 'utf8');
-        var YAMLDoc = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
-        var content = YAMLDoc[0].toJSON();
-        if (debugMode)
-            console.dir(content);
-        if (content.categories) {
-            var categoriesString = content.categories.toString();
-        }
-        else {
-            categoriesString = UNCATEGORIZED_STRING;
-        }
-        var catArray = categoriesString.split(',');
-        for (var cat of catArray) {
-            var category = cat.trim();
-            var index = categories.findIndex((item) => item.category === category);
-            if (index < 0) {
-                log.info(`Found category: ${category}`);
-                categories.push({ category: category, count: 1, description: '' });
+        if (path.extname(fileName.toString().toLocaleLowerCase()) !== '.json') {
+            var postFile = fs.readFileSync(fileName.toString(), 'utf8');
+            var YAMLDoc = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
+            var content = YAMLDoc[0].toJSON();
+            if (debugMode)
+                console.dir(content);
+            if (content.categories) {
+                var categoriesString = content.categories.toString();
             }
             else {
-                categories[index].count++;
+                categoriesString = UNCATEGORIZED_STRING;
             }
+            var catArray = categoriesString.split(',');
+            for (var cat of catArray) {
+                var category = cat.trim();
+                var index = categories.findIndex((item) => item.category === category);
+                if (index < 0) {
+                    log.info(`Found category: ${category}`);
+                    categories.push({ category: category, count: 1, description: '' });
+                }
+                else {
+                    categories[index].count++;
+                }
+            }
+        }
+        else {
+            log.info(`Skipping ${fileName}`);
         }
     }
     return categories;

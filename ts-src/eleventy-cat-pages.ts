@@ -120,35 +120,40 @@ function buildCategoryList(
   log.info('Building category list...');
   for (var fileName of fileList) {
     log.debug(`Parsing ${fileName}`);
-    // Read the post file
-    var postFile = fs.readFileSync(fileName.toString(), 'utf8');
-    // Get the first YAML block from the file
-    var YAMLDoc: any[] = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
-    var content = YAMLDoc[0].toJSON();
-    if (debugMode) console.dir(content);
 
-    // Does the post have a category?
-    if (content.categories) {
-      var categoriesString = content.categories.toString();
-    } else {
-      // handle posts that don't have a category
-      categoriesString = UNCATEGORIZED_STRING;
-    }
-    // split the category list into an array
-    var catArray = categoriesString.split(',');
-    // loop through the array
-    for (var cat of catArray) {
-      var category = cat.trim();  // Remove leading and trailing spaces        
-      // Does the category already exist in the list?
-      var index = categories.findIndex((item) => item.category === category);
-      if (index < 0) {
-        log.info(`Found category: ${category}`);
-        // add the category to the list
-        categories.push({ category: category, count: 1, description: '' });
+    if (path.extname(fileName.toString().toLocaleLowerCase()) !== '.json') {
+      // Read the post file
+      var postFile = fs.readFileSync(fileName.toString(), 'utf8');
+      // Get the first YAML block from the file
+      var YAMLDoc: any[] = YAML.parseAllDocuments(postFile, { logLevel: 'silent' });
+      var content = YAMLDoc[0].toJSON();
+      if (debugMode) console.dir(content);
+
+      // Does the post have a category?
+      if (content.categories) {
+        var categoriesString = content.categories.toString();
       } else {
-        // increment the count for the category
-        categories[index].count++;
+        // handle posts that don't have a category
+        categoriesString = UNCATEGORIZED_STRING;
       }
+      // split the category list into an array
+      var catArray = categoriesString.split(',');
+      // loop through the array
+      for (var cat of catArray) {
+        var category = cat.trim();  // Remove leading and trailing spaces        
+        // Does the category already exist in the list?
+        var index = categories.findIndex((item) => item.category === category);
+        if (index < 0) {
+          log.info(`Found category: ${category}`);
+          // add the category to the list
+          categories.push({ category: category, count: 1, description: '' });
+        } else {
+          // increment the count for the category
+          categories[index].count++;
+        }
+      }
+    } else {
+      log.info(`Skipping ${fileName}`);
     }
   }
   return categories;
