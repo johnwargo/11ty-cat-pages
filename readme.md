@@ -41,38 +41,62 @@ With this in place you can modify your project's `package.json` file and add the
 
 ## Usage
 
+To use this module, you must configure the project with the files it needs to operate; once that's in place, you simply execute the command every time you add a new category to your site and you're all set.
+
 ### Create the Template File
 
+Every site will have different content for the category pages, so its up to you to create the template file used by the module. Create the file any way you want using whatever template language you're comfortible with. The general format of the file is:
+
+1. YAML Front matter specifying the layout, pagination, permalink, and so on required for the page.
+2. Content describing the page
+3. The template code required to render the paginated post list on the page (including previous and next buttons)
+
+Here's an example from [johnwargo.com](https://johnwargo.com):
+
+**File: 11ty-cat-pages.liquid**
 ```liquid
 ---
-layout: default
+layout: generic
 pagination:
   data: collections.post
   size: 20
-  alias: posts
-permalink: "/category/{{ category | slugify }}/index.html"
+  alias: catposts
+category: 
 eleventyComputed:
   title: "Category: {{ category }}"
+permalink: "category/{{ category | slugify }}/{% if pagination.pageNumber != 0 %}page-{{ pagination.pageNumber }}/{% endif %}"
 ---
-
-<header>
-  <h2>Category: {{ category }}</h2>
-</header>
 
 <p>All posts for a single category, in reverse chronological order.</p>
 
-{% for post in posts reversed %}
+{% for post in catposts reversed %}
   <div>
     <a href="{{post.url}}">{{ post.data.title }}</a>, posted {{ post.date | niceDate }}
     {% excerpt post %}
   </div>
 {% endfor %}
+
+<p>
+  {% if pagination.href.previous %}
+    <button type="button" onclick="location.href='{{ pagination.href.previous }}'">Previous</button>
+  {% endif %}
+  {% if pagination.href.next %}
+    <button type="button" onclick="location.href='{{ pagination.href.next }}'">Next</button>
+  {% endif %}
+</p>
 ```
+
 
 ### Generate the Configuration File
 
+The module uses a simple JSON configuration file to define parameters used when generating content for the site. The first time you execute the command, it will generate the file for you.
 
-D:\dev\node\11ty-cat-pages>11ty-cat-pages
+```shell
+11ty-cat-pages
+```
+
+
+
 ```text
 Eleventy Category File Generator
 by John M. Wargo (https://johnwargo.com)
@@ -101,6 +125,30 @@ Create configuration file? Enter yes or no:
 
 ### Generate the Categories Data and Category Files
 
+
+## Example Categories Page
+
+```liquid
+---
+title: Categories
+layout: generic
+---
+
+{% assign categories = category-meta | sort %}
+
+<p>View all posts for a particular category by clicking on one of the categories listed below. There are {{ categories.length }} categories on the site today.</p>
+
+{% for catData in categories %}
+  <p>
+    <a href="{{ "/" | htmlBaseUrl }}category/{{ catData.category | slugify }}">{{ catData.category }}</a>
+    ({{ catData.count }} posts)
+    {% if catData.description %}
+      <br/>
+      {{ catData.description }}
+    {% endif %}
+  </p>
+{% endfor %}
+```
 
 
 ## Notes to self
