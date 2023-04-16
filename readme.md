@@ -88,6 +88,8 @@ permalink: "category/{{ category | slugify }}/{% if pagination.pageNumber != 0 %
 </p>
 ```
 
+> **Note:** The template file front matter must be in YAML format; the module does not understand any other format. 
+
 When you generate category data for your site, the module, for each category, converts the template into a category page that looks like this:
 
 ```liquid
@@ -129,7 +131,9 @@ When you generate category data for your site, the module, for each category, co
 
 The first thing you'll likely notice is that the module converted the front matter from YAML to JSON format. It did this because the ability to have separate paginated pages requires filtering on the fly to only generate pages for the selected category. The module does this using the Eleventy Pagination `before` callback function. 
 
-The `before` callback allows you to programmatically control the posts included in the pagination data set. In this example, the module generated the following function which is called before Eleventy starts generating the pagination pages: 
+The `before` callback allows you to programmatically control the posts included in the pagination data set. The template's front matter must be in JSON format for the Eleventy processing tools to execute the `before` function.
+
+In this example, the module generated the following function which is called before Eleventy starts generating the pagination pages: 
 
 ```js
 function(paginationData, fullData){ 
