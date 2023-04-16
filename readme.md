@@ -4,9 +4,9 @@ Preprocessor for [Eleventy](https://www.11ty.dev/) sites:
 
 1. Recursively reads all the posts in a specified directory 
 2. Generates a global data file containing a JSON object representing the list of categories with the following properties:
-  1. Category Name
-  2. Description
-  3. Post count (for the category)
+    * Category Name
+    * Description
+    * Post count (for the category)
 3. 
 
 
