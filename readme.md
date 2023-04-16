@@ -291,6 +291,10 @@ If you add a new category to the site and re-run the module, the new category ap
 
 **Note:** Descriptions provided by the [Bacon Ipsum Generator](https://baconipsum.com/).
 
+
+![Project Folder](/images/figure-01.png)
+
+
 ## Example Categories Page
 
 ```liquid
