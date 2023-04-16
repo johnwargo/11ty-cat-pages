@@ -6,7 +6,6 @@
  * Created March 20, 2023
  */
 
-// TODO: Prompt the user before creating the config file
 // TODO: Write all log output to a file
 // TODO: Import package.json file for version number
 // let rawData = fs.readFileSync(inputFile);
@@ -17,6 +16,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import YAML from 'yaml'
+import yesno from 'yesno';
 //@ts-ignore
 import logger from 'cli-logger';
 var log = logger();
@@ -31,10 +31,9 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_FILES = ['.eleventy.js', 'eleventy.config.js'];
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-// const YAML_PATTERN = /(^-{3}(?:\r\n|\r|\n)([\w\W]*?)-{3}(?:\r\n|\r|\n))?([\w\W]*)*/
+// get CR and/or LF, accommodates DOS and Unix file formats
+const YAML_PATTERN = /---[\r\n].*?[\r\n]---/s
 // https://stackoverflow.com/questions/75845110/javascript-regex-to-replace-yaml-frontmatter/75845227#75845227
-// const YAML_PATTERN = /(?<=---\n).*?(?=\n---)/s
-const YAML_PATTERN = /---\n.*?\n---/s
 
 var fileList: String[] = [];
 var templateExtension: string;
@@ -224,25 +223,42 @@ log.debug('Project is an Eleventy project folder');
 const configFile = path.join(process.cwd(), APP_CONFIG_FILE);
 log.info('Locating configuration file');
 if (!fs.existsSync(configFile)) {
-  log.info(`Configuration file '${APP_CONFIG_FILE}' not found, creating...`);
-  // create the configuration file  
-  let configObject = buildConfigObject();
-  if (debugMode) console.dir(configObject);
-  let outputStr = JSON.stringify(configObject, null, 2);
-  // replace the backslashes with forward slashes
-  // do this so on windows it would have double backslashes
-  outputStr = outputStr.replace(/\\/g, '/');
-  outputStr = outputStr.replaceAll('//', '/');
-  log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
-  try {
-    fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
-    log.info('Output file written successfully');
-  } catch (err: any) {
-    log.error(`Unable to write to ${APP_CONFIG_FILE}`);
-    console.dir(err);
-    process.exit(1);
-  }
-  process.exit(0);
+  log.info(`\nConfiguration file '${APP_CONFIG_FILE}' not found`);
+  log.info('Rather than using a bunch of command-line arguments, this tool uses a configuration file instead.');
+  log.info('In the next step, the module will automatically create the configuration file for you.');
+  log.info('Once it completes, you can edit the configuration file to change the default values and execute the command again.');
+  await yesno({
+    question: '\nCreate configuration file? Enter yes or no:',
+    defaultValue: false,
+    yesValues: ['Yes'],
+    noValues: ['No']
+  }).then((confirmExport: boolean) => {
+    if (confirmExport) {
+      
+      // create the configuration file  
+      let configObject = buildConfigObject();
+      if (debugMode) console.dir(configObject);
+      let outputStr = JSON.stringify(configObject, null, 2);
+      // replace the backslashes with forward slashes
+      // do this so on windows it would have double backslashes
+      outputStr = outputStr.replace(/\\/g, '/');
+      outputStr = outputStr.replaceAll('//', '/');
+      log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
+      try {
+        fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
+        log.info('Output file written successfully');
+        log.info('\nEdit the configuration with the correct values for this project then execute the command again.');
+      } catch (err: any) {
+        log.error(`Unable to write to ${APP_CONFIG_FILE}`);
+        console.dir(err);
+        process.exit(1);
+      }
+      process.exit(0);
+    } else {
+      log.info('Exiting...');
+      process.exit(0);
+    }
+  });
 }
 
 // Read the config file

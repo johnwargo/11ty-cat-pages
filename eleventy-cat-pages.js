@@ -2,6 +2,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import YAML from 'yaml';
+import yesno from 'yesno';
 import logger from 'cli-logger';
 var log = logger();
 const APP_NAME = '\nEleventy Category File Generator';
@@ -11,7 +12,7 @@ const DATA_FILE = 'category-meta.json';
 const ELEVENTY_FILES = ['.eleventy.js', 'eleventy.config.js'];
 const TEMPLATE_FILE = '11ty-cat-pages.liquid';
 const UNCATEGORIZED_STRING = 'Uncategorized';
-const YAML_PATTERN = /---\n.*?\n---/s;
+const YAML_PATTERN = /---[\r\n].*?[\r\n]---/s;
 var fileList = [];
 var templateExtension;
 function checkEleventyProject() {
@@ -163,24 +164,41 @@ log.debug('Project is an Eleventy project folder');
 const configFile = path.join(process.cwd(), APP_CONFIG_FILE);
 log.info('Locating configuration file');
 if (!fs.existsSync(configFile)) {
-    log.info(`Configuration file '${APP_CONFIG_FILE}' not found, creating...`);
-    let configObject = buildConfigObject();
-    if (debugMode)
-        console.dir(configObject);
-    let outputStr = JSON.stringify(configObject, null, 2);
-    outputStr = outputStr.replace(/\\/g, '/');
-    outputStr = outputStr.replaceAll('//', '/');
-    log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
-    try {
-        fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
-        log.info('Output file written successfully');
-    }
-    catch (err) {
-        log.error(`Unable to write to ${APP_CONFIG_FILE}`);
-        console.dir(err);
-        process.exit(1);
-    }
-    process.exit(0);
+    log.info(`\nConfiguration file '${APP_CONFIG_FILE}' not found`);
+    log.info('Rather than using a bunch of command-line arguments, this tool uses a configuration file instead.');
+    log.info('In the next step, the module will automatically create the configuration file for you.');
+    log.info('Once it completes, you can edit the configuration file to change the default values and execute the command again.');
+    await yesno({
+        question: '\nCreate configuration file? Enter yes or no:',
+        defaultValue: false,
+        yesValues: ['Yes'],
+        noValues: ['No']
+    }).then((confirmExport) => {
+        if (confirmExport) {
+            let configObject = buildConfigObject();
+            if (debugMode)
+                console.dir(configObject);
+            let outputStr = JSON.stringify(configObject, null, 2);
+            outputStr = outputStr.replace(/\\/g, '/');
+            outputStr = outputStr.replaceAll('//', '/');
+            log.info(`Writing configuration file ${APP_CONFIG_FILE}`);
+            try {
+                fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
+                log.info('Output file written successfully');
+                log.info('\nEdit the configuration with the correct values for this project and try again.');
+            }
+            catch (err) {
+                log.error(`Unable to write to ${APP_CONFIG_FILE}`);
+                console.dir(err);
+                process.exit(1);
+            }
+            process.exit(0);
+        }
+        else {
+            log.info('Exiting...');
+            process.exit(0);
+        }
+    });
 }
 log.info('Configuration file located, validating');
 const configFilePath = path.join(process.cwd(), APP_CONFIG_FILE);
