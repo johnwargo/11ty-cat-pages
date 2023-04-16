@@ -41,7 +41,35 @@ With this in place you can modify your project's `package.json` file and add the
 
 ## Usage
 
+### Create the Template File
 
+```liquid
+---
+layout: default
+pagination:
+  data: collections.post
+  size: 20
+  alias: posts
+permalink: "/category/{{ category | slugify }}/index.html"
+eleventyComputed:
+  title: "Category: {{ category }}"
+---
+
+<header>
+  <h2>Category: {{ category }}</h2>
+</header>
+
+<p>All posts for a single category, in reverse chronological order.</p>
+
+{% for post in posts reversed %}
+  <div>
+    <a href="{{post.url}}">{{ post.data.title }}</a>, posted {{ post.date | niceDate }}
+    {% excerpt post %}
+  </div>
+{% endfor %}
+```
+
+### Generate the Configuration File
 
 
 D:\dev\node\11ty-cat-pages>11ty-cat-pages
@@ -70,6 +98,8 @@ Create configuration file? Enter yes or no:
   "templateFileName": "11ty-cat-pages.liquid"
 }
 ```
+
+### Generate the Categories Data and Category Files
 
 
 
