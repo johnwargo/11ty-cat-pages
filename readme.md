@@ -197,6 +197,13 @@ At this point, you should open the generated configuration file (called `11ty-ca
 }
 ```
 
+| Property           | Description |
+| ------------------ | ----------- |
+| `categoryFolder`   |  |
+| `dataFileName`     |  |
+| `dataFolder`       |  |
+| `postsFolder`      |  |
+| `templateFileName` |  |
 
 
 ### Generate the Categories Data and Category Files
