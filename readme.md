@@ -238,7 +238,16 @@ Writing category page: D:\dev\node\11ty-cat-pages\src\category\dog.liquid
 Writing category page: D:\dev\node\11ty-cat-pages\src\category\turtles.liquid
 ```
 
-If you look in your project's `_data` folder, you should see the categories data file; for this particular project it's called `category-meta.json`
+Looking in the project folder, you should now see:
+
+1. The global data file (`category-meta.json` in this example) in the project's `src/_data` folder.
+2. A separate file for each category in the `src/category` folder
+
+As shown in the following screenshot:
+
+![Project Folder](/images/figure-01.png)
+
+If you look in your project's `src/_data/category-meta.json` file, you should see the categories data file as shown below:
 
 ```json
 [
@@ -262,7 +271,7 @@ If you look in your project's `_data` folder, you should see the categories data
 
 As you can see, the description property is blank for each category. You can edit the file, adding descriptions for each of the categories, your edits won't be overwritten by the module unless you remove all of the posts for the particular category and run the module again.
 
-If you add a new category to the site and re-run the module, the new category appears in the file alongside the existing data.
+If you add a new category to the site and re-run the module, the new category appears in the file alongside the existing data:
 
 ```json
 [
@@ -291,11 +300,11 @@ If you add a new category to the site and re-run the module, the new category ap
 
 **Note:** Descriptions provided by the [Bacon Ipsum Generator](https://baconipsum.com/).
 
-
-![Project Folder](/images/figure-01.png)
-
+When you open one of the files in the `src/category` folder, you should see a generated category page as described above, one for each category.
 
 ## Example Categories Page
+
+As an extra bonus, here's a sample Categories page you can use in your site:
 
 ```liquid
 ---
@@ -318,8 +327,12 @@ layout: generic
   </p>
 {% endfor %}
 ```
+### Getting Help Or Making Changes
 
+Use [GitHub Issues](https://github.com/johnwargo/11ty-cat-pages/issues) to get help with this module.
 
-## Notes to self
+Pull Requests gladly accepted, but only with complete documentation of what the change is, why you made it, and why you think its important to have in the module.
 
-Pretty printing data in terminal: https://lars-waechter.gitbook.io/voici.js/
+*** 
+
+If this code helps you: <a href="https://www.buymeacoffee.com/johnwargo" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
