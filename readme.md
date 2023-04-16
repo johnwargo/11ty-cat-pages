@@ -247,7 +247,7 @@ Looking in the project folder, you should now see:
 
 As shown in the following screenshot:
 
-![Project Folder](/images/figure-01.png)
+![Project Folder](https://github.com/johnwargo/11ty-cat-pages/blob/main/images/figure-01.png)
 
 If you look in your project's `src/_data/category-meta.json` file, you should see the categories data file as shown below:
 
