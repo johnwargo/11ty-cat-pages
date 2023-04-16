@@ -86,6 +86,59 @@ permalink: "category/{{ category | slugify }}/{% if pagination.pageNumber != 0 %
 </p>
 ```
 
+When you generate category data for your site, the module, for each category, converts the template into a category page that looks like this:
+
+```liquid
+---js
+{
+  "layout": "generic",
+  "pagination": {
+    "data": "collections.post",
+    "size": 20,
+    "alias": "catposts",
+    "before": function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.includes('Miscellaneous'));}
+  },
+  "category": "Miscellaneous",
+  "eleventyComputed": {
+    "title": "Category: {{ category }}"
+  },
+  "permalink": "category/{{ category | slugify }}/{% if pagination.pageNumber != 0 %}page-{{ pagination.pageNumber }}/{% endif %}"
+}
+---
+
+<p>All posts for a single category, in reverse chronological order.</p>
+
+{% for post in catposts reversed %}
+  <div>
+    <a href="{{post.url}}">{{ post.data.title }}</a>, posted {{ post.date | niceDate }}
+    {% excerpt post %}
+  </div>
+{% endfor %}
+
+<p>
+  {% if pagination.href.previous %}
+    <button type="button" onclick="location.href='{{ pagination.href.previous }}'">Previous</button>
+  {% endif %}
+  {% if pagination.href.next %}
+    <button type="button" onclick="location.href='{{ pagination.href.next }}'">Next</button>
+  {% endif %}
+</p>
+```
+
+The first thing you'll likely notice is that the module converted the front matter from YAML to JSON format. It did this because the ability to have separate paginated pages requires filtering on the fly to only generate pages for the selected category. The module does this using the Eleventy Pagination `before` callback function. 
+
+The `before` callback allows you to programmatically control the posts included in the pagination data set. In this example, the module generated the following function which is called before Eleventy starts generating the pagination pages: 
+
+```js
+function(paginationData, fullData){ 
+  return paginationData.filter((item) => item.data.categories.includes('Miscellaneous'));
+}
+```
+
+The function essentially returns all of the posts filtered by the category name (which in this case is 'Miscellaneous').
+
+**Note:** I could have used a filter function in the project's `eleventy.config.js` file, but that would have added an additional dependency to make this work. Using the `before` callback eliminates the need to make any changes to the `eleventy.config.js` file.
+
 
 ### Generate the Configuration File
 
