@@ -140,11 +140,10 @@ function findFilePath(endPath, thePaths) {
 }
 function buildConfigObject() {
     const theFolders = ['.', 'src'];
-    const dataFolder = findFilePath('_data', theFolders);
     return {
         categoriesFolder: findFilePath('categories', theFolders),
-        dataFileName: path.join(dataFolder, DATA_FILE),
-        dataFolder: dataFolder,
+        dataFileName: DATA_FILE,
+        dataFolder: findFilePath('_data', theFolders),
         postsFolder: findFilePath('posts', theFolders),
         templateFileName: TEMPLATE_FILE
     };
@@ -185,7 +184,7 @@ if (!fs.existsSync(configFile)) {
             try {
                 fs.writeFileSync(path.join('.', APP_CONFIG_FILE), outputStr, 'utf8');
                 log.info('Output file written successfully');
-                log.info('\nEdit the configuration with the correct values for this project and try again.');
+                log.info('\nEdit the configuration with the correct values for this project then execute the command again.');
             }
             catch (err) {
                 log.error(`Unable to write to ${APP_CONFIG_FILE}`);
@@ -229,10 +228,10 @@ validateConfig(validations)
         }
         templateExtension = path.extname(configObject.templateFileName);
         let categories = [];
-        let categoryFile = path.join(process.cwd(), configObject.dataFileName);
-        if (fs.existsSync(categoryFile)) {
-            log.info(`Reading existing categories file ${configObject.dataFileName}`);
-            let categoryData = fs.readFileSync(categoryFile, 'utf8');
+        let categoriesFile = path.join(process.cwd(), configObject.dataFolder, configObject.dataFileName);
+        if (fs.existsSync(categoriesFile)) {
+            log.info(`Reading existing categories file ${categoriesFile}`);
+            let categoryData = fs.readFileSync(categoriesFile, 'utf8');
             categories = JSON.parse(categoryData);
             if (categories.length > 0)
                 categories.forEach((item) => item.count = 0);
@@ -259,10 +258,9 @@ validateConfig(validations)
         categories = categories.sort(compareFunction);
         if (debugMode)
             console.table(categories);
-        var outputPath = path.join(process.cwd(), configObject.dataFileName);
-        log.info(`Writing categories list to ${outputPath}`);
+        log.info(`Writing categories list to ${categoriesFile}`);
         try {
-            fs.writeFileSync(outputPath, JSON.stringify(categories, null, 2), 'utf8');
+            fs.writeFileSync(categoriesFile, JSON.stringify(categories, null, 2), 'utf8');
         }
         catch (err) {
             console.log('Error writing file');

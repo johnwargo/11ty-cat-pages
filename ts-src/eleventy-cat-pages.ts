@@ -185,11 +185,10 @@ function findFilePath(endPath: string, thePaths: string[]): string {
 
 function buildConfigObject(): ConfigObject {
   const theFolders: string[] = ['.', 'src'];
-  const dataFolder = findFilePath('_data', theFolders);
   return {
     categoriesFolder: findFilePath('categories', theFolders),
-    dataFileName: path.join(dataFolder, DATA_FILE),
-    dataFolder: dataFolder,
+    dataFileName: DATA_FILE,
+    dataFolder: findFilePath('_data', theFolders),
     postsFolder: findFilePath('posts', theFolders),
     templateFileName: TEMPLATE_FILE
   }
@@ -234,7 +233,7 @@ if (!fs.existsSync(configFile)) {
     noValues: ['No']
   }).then((confirmExport: boolean) => {
     if (confirmExport) {
-      
+
       // create the configuration file  
       let configObject = buildConfigObject();
       if (debugMode) console.dir(configObject);
@@ -299,14 +298,15 @@ validateConfig(validations)
         process.exit(1);
       }
 
+      // get the file extension for the template file, we'll use it later
       templateExtension = path.extname(configObject.templateFileName);
 
       let categories: CategoryRecord[] = [];
       // Read the existing categories file
-      let categoryFile = path.join(process.cwd(), configObject.dataFileName);
-      if (fs.existsSync(categoryFile)) {
-        log.info(`Reading existing categories file ${configObject.dataFileName}`);
-        let categoryData = fs.readFileSync(categoryFile, 'utf8');
+      let categoriesFile = path.join(process.cwd(), configObject.dataFolder, configObject.dataFileName);
+      if (fs.existsSync(categoriesFile)) {
+        log.info(`Reading existing categories file ${categoriesFile}`);
+        let categoryData = fs.readFileSync(categoriesFile, 'utf8');
         categories = JSON.parse(categoryData);
         // zero out all of the categories
         if (categories.length > 0) categories.forEach((item) => item.count = 0);
@@ -336,10 +336,9 @@ validateConfig(validations)
       categories = categories.sort(compareFunction);
       if (debugMode) console.table(categories);
 
-      var outputPath: string = path.join(process.cwd(), configObject.dataFileName);
-      log.info(`Writing categories list to ${outputPath}`);
+      log.info(`Writing categories list to ${categoriesFile}`);
       try {
-        fs.writeFileSync(outputPath, JSON.stringify(categories, null, 2), 'utf8');
+        fs.writeFileSync(categoriesFile, JSON.stringify(categories, null, 2), 'utf8');
       } catch (err) {
         console.log('Error writing file');
         console.error(err)
@@ -359,7 +358,6 @@ validateConfig(validations)
 
         log.debug(`\nProcessing category: ${item.category}`);
         let pos1 = templateFile.search(YAML_PATTERN);
-        // console.log(`pos1: ${pos1}`);
         if (pos1 > -1) {
           // We have a match for the YAML frontmatter (which makes sense)
           // replace the category field in the frontmatter

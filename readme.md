@@ -139,16 +139,15 @@ The function essentially returns all of the posts filtered by the category name 
 
 **Note:** I could have used a filter function in the project's `eleventy.config.js` file, but that would have added an additional dependency to make this work. Using the `before` callback eliminates the need to make any changes to the `eleventy.config.js` file.
 
-
 ### Generate the Configuration File
 
-The module uses a simple JSON configuration file to define parameters used when generating content for the site. The first time you execute the command, it will generate the file for you.
+The module uses a simple JSON configuration file to define parameters used when generating content for the site. The first time you execute the command, it will generate the file for you. Open a terminal window or command prompt in your Eleventy project's root folder and execute the following command:
 
 ```shell
 11ty-cat-pages
 ```
 
-
+The module will notice that there's no configuration file in the project folder and prompt you to create it:
 
 ```text
 Eleventy Category File Generator
@@ -164,20 +163,64 @@ Once it completes, you can edit the configuration file to change the default val
 Create configuration file? Enter yes or no:
 ```
 
+Type `yes` and press the Enter key, and the module will create the configuration file:
 
+```text
+Eleventy Category File Generator
+by John M. Wargo (https://johnwargo.com)
+Validating project folder
+Locating configuration file
+
+Configuration file '11ty-cat-pages.json' not found
+Rather than using a bunch of command-line arguments, this tool uses a configuration file instead.
+In the next step, the module will automatically create the configuration file for you.
+Once it completes, you can edit the configuration file to change the default values and execute the command again.
+
+Create configuration file? Enter yes or no: yes
+Writing configuration file 11ty-cat-pages.json
+Output file written successfully
+
+Edit the configuration with the correct values for this project and try again.
+```
+
+**Note:** The module attempts to locate the different project folders based on how developers set up most Eleventy projects, so the configuration file may be correct for your project.
+
+At this point, you should open the generated configuration file (called `11ty-cat-pages.json`) and ensure that the property values are correct. Here's what the default configuration settings look like for my project:
 
 ```json
 {
   "categoriesFolder": "src/categories",
-  "dataFileName": "src/_data/category-meta.json",
+  "dataFileName": "category-meta.json",
   "dataFolder": "src/_data",
   "postsFolder": "src/posts",
   "templateFileName": "11ty-cat-pages.liquid"
 }
 ```
 
+
+
 ### Generate the Categories Data and Category Files
 
+
+```json
+[
+  {
+    "category": "Cats",
+    "count": 1,
+    "description": ""
+  },
+  {
+    "category": "Dogs",
+    "count": 42,
+    "description": ""
+  },
+  {
+    "category": "Turtles",
+    "count": 8,
+    "description": ""
+  }  
+]
+```
 
 ## Example Categories Page
 
