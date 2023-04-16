@@ -186,7 +186,7 @@ function findFilePath(endPath: string, thePaths: string[]): string {
 function buildConfigObject(): ConfigObject {
   const theFolders: string[] = ['.', 'src'];
   return {
-    categoriesFolder: findFilePath('categories', theFolders),
+    categoryFolder: findFilePath('category', theFolders),
     dataFileName: DATA_FILE,
     dataFolder: findFilePath('_data', theFolders),
     postsFolder: findFilePath('posts', theFolders),
@@ -274,7 +274,7 @@ const configObject: ConfigObject = JSON.parse(configData);
 // we'll create this file when we write it
 // { filePath: configObject.dataFileName, isFolder: false },
 const validations: ConfigValidation[] = [
-  { filePath: configObject.categoriesFolder, isFolder: true },
+  { filePath: configObject.categoryFolder, isFolder: true },
   { filePath: configObject.dataFolder, isFolder: true },
   { filePath: configObject.postsFolder, isFolder: true },
   { filePath: configObject.templateFileName, isFolder: false }
@@ -346,7 +346,7 @@ validateConfig(validations)
       }
 
       // empty the categories folder, just in case there are old categories there
-      const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
+      const categoriesFolder = path.join(process.cwd(), configObject.categoryFolder);
       log.debug(`Emptying categories folder: ${categoriesFolder}`);
       fs.emptyDirSync(categoriesFolder);
 

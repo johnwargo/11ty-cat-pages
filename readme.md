@@ -189,7 +189,7 @@ At this point, you should open the generated configuration file (called `11ty-ca
 
 ```json
 {
-  "categoriesFolder": "src/categories",
+  "categoryFolder": "src/category",
   "dataFileName": "category-meta.json",
   "dataFolder": "src/_data",
   "postsFolder": "src/posts",

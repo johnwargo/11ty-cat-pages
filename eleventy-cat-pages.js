@@ -141,7 +141,7 @@ function findFilePath(endPath, thePaths) {
 function buildConfigObject() {
     const theFolders = ['.', 'src'];
     return {
-        categoriesFolder: findFilePath('categories', theFolders),
+        categoryFolder: findFilePath('category', theFolders),
         dataFileName: DATA_FILE,
         dataFolder: findFilePath('_data', theFolders),
         postsFolder: findFilePath('posts', theFolders),
@@ -208,7 +208,7 @@ if (!fs.existsSync(configFilePath)) {
 let configData = fs.readFileSync(configFilePath, 'utf8');
 const configObject = JSON.parse(configData);
 const validations = [
-    { filePath: configObject.categoriesFolder, isFolder: true },
+    { filePath: configObject.categoryFolder, isFolder: true },
     { filePath: configObject.dataFolder, isFolder: true },
     { filePath: configObject.postsFolder, isFolder: true },
     { filePath: configObject.templateFileName, isFolder: false }
@@ -267,7 +267,7 @@ validateConfig(validations)
             console.error(err);
             process.exit(1);
         }
-        const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
+        const categoriesFolder = path.join(process.cwd(), configObject.categoryFolder);
         log.debug(`Emptying categories folder: ${categoriesFolder}`);
         fs.emptyDirSync(categoriesFolder);
         categories.forEach(function (item) {
