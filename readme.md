@@ -45,7 +45,7 @@ To use this module, you must configure the project with the files it needs to op
 
 ### Create the Template File
 
-Every site will have different content for the category pages, so its up to you to create the template file used by the module. Create the file any way you want using whatever template language you're comfortible with. The general format of the file is:
+Every site will have different content for the category pages, so its up to you to create the template file used by the module. Create the file any way you want using whatever template language you're comfortable with. The general format of the file is:
 
 1. YAML Front matter specifying the layout, pagination, permalink, and so on required for the page.
 2. Content describing the page
@@ -211,7 +211,34 @@ With the configuration file and template file in place, you're ready to generate
 
 ### Generate the Categories Data and Category Files
 
+To generate the category data file and pages, open a terminal window or command prompt in your Eleventy project's root folder and execute the following command:
 
+```shell
+11ty-cat-pages
+```
+
+The module will read the configuration file, validate the properties in the file, and generate the necessary files in your project:
+
+```text
+Eleventy Category File Generator
+by John M. Wargo (https://johnwargo.com)
+Validating project folder
+Locating configuration file
+Configuration file located, validating
+Reading template file 11ty-cat-pages.liquid
+Reading existing categories file D:\dev\node\11ty-cat-pages\src\_data\category-meta.json
+Building file list...
+Located 6 files
+Building category list...
+Deleting unused categories (from previous runs)
+Identified 6 categories
+Writing categories list to D:\dev\node\11ty-cat-pages\src\_data\category-meta.json
+Writing category page: D:\dev\node\11ty-cat-pages\src\category\cats.liquid
+Writing category page: D:\dev\node\11ty-cat-pages\src\category\dog.liquid
+Writing category page: D:\dev\node\11ty-cat-pages\src\category\turtles.liquid
+```
+
+If you look in your project's `_data` folder, you should see the categories data file; for this particular project it's called `category-meta.json`
 
 ```json
 [
@@ -232,6 +259,37 @@ With the configuration file and template file in place, you're ready to generate
   }  
 ]
 ```
+
+As you can see, the description property is blank for each category. You can edit the file, adding descriptions for each of the categories, your edits won't be overwritten by the module unless you remove all of the posts for the particular category and run the module again.
+
+If you add a new category to the site and re-run the module, the new category appears in the file alongside the existing data.
+
+```json
+[
+  {
+    "category": "Cats",
+    "count": 1,
+    "description": "Strip steak alcatra filet mignon drumstick, doner ham sausage."
+  },
+  {
+    "category": "Dogs",
+    "count": 42,
+    "description": "Short loin andouille leberkas ball tip, pork belly pork jowl ham flank turducken meatball brisket beef prosciutto boudin."
+  },
+  {
+    "category": "Ferrets",
+    "count": 1,
+    "description": ""
+  },
+  {
+    "category": "Turtles",
+    "count": 8,
+    "description": "Short ribs jowl ground round spare ribs swine tenderloin."
+  }  
+]
+```
+
+**Note:** Descriptions provided by the [Bacon Ipsum Generator](https://baconipsum.com/).
 
 ## Example Categories Page
 
