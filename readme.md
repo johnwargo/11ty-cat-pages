@@ -1,6 +1,8 @@
 # Eleventy Category Pages
 
-Preprocessor for [Eleventy](https://www.11ty.dev/) sites that:
+Preprocessor for [Eleventy](https://www.11ty.dev/) sites that helps developers implement a categories page with descriptions plus separate paginated pages for each category.
+
+The module is a command-line utility that:
 
 1. Recursively reads all the posts in a specified directory 
 2. Generates a global data file containing a JSON object representing the list of categories with the following properties:
