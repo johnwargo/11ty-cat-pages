@@ -14,7 +14,6 @@ import path from 'path';
 
 // Third-party modules
 import boxen from 'boxen';
-import chalk from 'chalk';
 import YAML from 'yaml'
 import yesno from 'yesno';
 //@ts-ignore
