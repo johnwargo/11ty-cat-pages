@@ -23,6 +23,7 @@
     "start": "tsc && node eleventy-cat-pages.js"
   },
   "dependencies": {
+    "boxen": "^7.0.2",
     "cli-logger": "^0.5.40",
     "fs-extra": "^11.1.1",
     "yaml": "^2.2.1",

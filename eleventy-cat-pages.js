@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 import fs from 'fs-extra';
 import path from 'path';
+import boxen from 'boxen';
 import YAML from 'yaml';
 import yesno from 'yesno';
 import logger from 'cli-logger';
 var log = logger();
-const APP_NAME = '\nEleventy Category File Generator';
+const APP_NAME = 'Eleventy Category Files Generator';
 const APP_AUTHOR = 'by John M. Wargo (https://johnwargo.com)';
 const APP_CONFIG_FILE = '11ty-cat-pages.json';
 const DATA_FILE = 'category-meta.json';
@@ -148,8 +149,8 @@ function buildConfigObject() {
         templateFileName: TEMPLATE_FILE
     };
 }
-console.log(APP_NAME);
-console.log(APP_AUTHOR);
+console.log(boxen(APP_NAME, { padding: 1 }));
+console.log('\n' + APP_AUTHOR);
 const myArgs = process.argv.slice(2);
 const debugMode = myArgs.includes('-d');
 log.level(debugMode ? log.DEBUG : log.INFO);

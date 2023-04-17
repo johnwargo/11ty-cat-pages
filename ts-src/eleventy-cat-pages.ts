@@ -7,24 +7,25 @@
  */
 
 // TODO: Write all log output to a file
-// TODO: Import package.json file for version number
-// let rawData = fs.readFileSync(inputFile);
-// let packageDotJSON = JSON.parse(rawData.toString());
-// let buildVersion = packageDotJSON.version;
-// writeConsole(green, '\nBuild version', buildVersion);
 
+// node modules
 import fs from 'fs-extra';
 import path from 'path';
+
+// Third-party modules
+import boxen from 'boxen';
+import chalk from 'chalk';
 import YAML from 'yaml'
 import yesno from 'yesno';
 //@ts-ignore
 import logger from 'cli-logger';
+
 var log = logger();
 
 // project modules
 import { CategoryRecord, ConfigObject, ConfigValidation, ProcessResult } from './types';
 
-const APP_NAME = '\nEleventy Category File Generator';
+const APP_NAME = 'Eleventy Category Files Generator';
 const APP_AUTHOR = 'by John M. Wargo (https://johnwargo.com)';
 const APP_CONFIG_FILE = '11ty-cat-pages.json';
 const DATA_FILE = 'category-meta.json';
@@ -198,9 +199,8 @@ function buildConfigObject(): ConfigObject {
 // Start Here!
 // ====================================
 
-console.log(APP_NAME);
-console.log(APP_AUTHOR);
-// console.log(`Version ${packageDotJSON.version} ${APP_AUTHOR}\n`);
+console.log(boxen(APP_NAME, { padding: 1 }));
+console.log('\n' + APP_AUTHOR);
 
 // do we have command-line arguments?
 const myArgs = process.argv.slice(2);
