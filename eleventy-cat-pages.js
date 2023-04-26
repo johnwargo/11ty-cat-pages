@@ -278,6 +278,8 @@ validateConfig(validations)
             let pos1 = templateFile.search(YAML_PATTERN);
             if (pos1 > -1) {
                 frontmatter.category = item.category;
+                if (item.description)
+                    frontmatter.description = item.description;
                 if (item.category == UNCATEGORIZED_STRING) {
                     frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.length == 0);}`;
                 }

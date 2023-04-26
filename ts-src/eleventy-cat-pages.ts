@@ -361,6 +361,7 @@ validateConfig(validations)
           // We have a match for the YAML frontmatter (which makes sense)
           // replace the category field in the frontmatter
           frontmatter.category = item.category;
+          if (item.description) frontmatter.description = item.description;
           if (item.category == UNCATEGORIZED_STRING) {
             // deal with uncategorized posts differently, categories field is blank
             frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.length == 0);}`
