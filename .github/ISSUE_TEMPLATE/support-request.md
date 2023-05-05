@@ -16,3 +16,5 @@ Be as complete as possible in explaining your problem. Simply telling me that so
 **What actually happened?**
 
 **What steps did you take to resolve this problem?**
+
+**What else would you like me to know?**
