@@ -371,8 +371,7 @@ validateConfig(validations)
           if (item.description) frontmatter.description = item.description;
           if (item.category == UNCATEGORIZED_STRING) {
             // deal with uncategorized posts differently, categories field is blank
-            frontmatter.pagination.before = `function(paginationData, fullData){ let data = paginationData.filter((item) => item.data.categories.length == 0); return Array.from(data).sort((a, b) => { return a.date < b.date ? 1 : -1; });
-            }`
+            frontmatter.pagination.before = `function(paginationData, fullData){ let data = paginationData.filter((item) => item.data.categories.length == 0); return Array.from(data).sort((a, b) => { return a.date < b.date ? 1 : -1; });}`
             //  frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.length == 0);
             // }`
           } else {
