@@ -115,6 +115,8 @@ function buildCategoryList(
   debugMode: boolean
 ): CategoryRecord[] {
 
+  var categoriesString: string;
+
   if (debugMode) console.log();
   log.info('Building category list...');
   for (var fileName of fileList) {
@@ -129,7 +131,12 @@ function buildCategoryList(
       if (debugMode) console.dir(content);
       // Does the post have a category?
       if (content.categories) {
-        var categoriesString = content.categories.toString();
+        if (content.categories.length > 0) {
+          categoriesString = content.categories.toString();
+        } else {
+          // handle posts with a blank category
+          categoriesString = UNCATEGORIZED_STRING;
+        }
       } else {
         // handle posts that don't have a category
         categoriesString = UNCATEGORIZED_STRING;

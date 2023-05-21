@@ -79,6 +79,7 @@ function getFileList(filePath, debugMode) {
     return getAllFiles(filePath, []);
 }
 function buildCategoryList(categories, fileList, debugMode) {
+    var categoriesString;
     if (debugMode)
         console.log();
     log.info('Building category list...');
@@ -91,7 +92,12 @@ function buildCategoryList(categories, fileList, debugMode) {
             if (debugMode)
                 console.dir(content);
             if (content.categories) {
-                var categoriesString = content.categories.toString();
+                if (content.categories.length > 0) {
+                    categoriesString = content.categories.toString();
+                }
+                else {
+                    categoriesString = UNCATEGORIZED_STRING;
+                }
             }
             else {
                 categoriesString = UNCATEGORIZED_STRING;
