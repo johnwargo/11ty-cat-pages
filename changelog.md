@@ -1,5 +1,9 @@
 # Changelog
 
+## 20230525
+
+Replaced the yesno module with prompts - implements a cleaner prompt to create the configuration file
+
 ## 20230521
 
 Fixed an issue where the module wouldn't generate the Uncategorized entry if the categories property existed but was empty.
