@@ -64,28 +64,44 @@ pagination:
   size: 20
   alias: catposts
 category: 
+description: 
 eleventyComputed:
   title: "Category: {{ category }}"
-permalink: "category/{{ category | slugify }}/{% if pagination.pageNumber != 0 %}page-{{ pagination.pageNumber }}/{% endif %}"
+permalink: "categories/{{ category | slugify }}/{% if pagination.pageNumber != 0 %}page-{{ pagination.pageNumber }}/{% endif %}"
 ---
 
-<p>All posts for a single category, in reverse chronological order.</p>
+{% include 'pagination-count.html' %}
 
-{% for post in catposts reversed %}
-  <div>
-    <a href="{{post.url}}">{{ post.data.title }}</a>, posted {{ post.date | niceDate }}
-    {% excerpt post %}
-  </div>
-{% endfor %}
+{{ description }}
 
-<p>
-  {% if pagination.href.previous %}
-    <button type="button" onclick="location.href='{{ pagination.href.previous }}'">Previous</button>
-  {% endif %}
-  {% if pagination.href.next %}
-    <button type="button" onclick="location.href='{{ pagination.href.next }}'">Next</button>
-  {% endif %}
-</p>
+<p>This page lists all posts in the category, in reverse chronological order.</p>
+
+<ul class="posts">
+  {% for post in catposts %}
+    <li>
+      <h4>
+        <a href="{{post.url}}" style="cursor: pointer">{{ post.data.title }}</a>
+      </h4>
+      Posted {{ post.date | readableDate }}
+      {% if post.data.categories.length > 0 %}
+        in
+        {% for cat in post.data.categories %}
+          <a href="/categories/{{ cat | slugify }}">{{ cat }}</a>
+          {%- unless forloop.last %},
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
+      <br/>
+      {% if post.data.description %}
+        {{ post.data.description }}
+      {% else %}
+        {% excerpt post %}
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+{% include 'pagination-nav.html' %}
 ```
 
 > **Note:** The template file front matter must be in YAML format; the module does not understand any other format. 
@@ -106,27 +122,42 @@ When you generate category data for your site, the module, for each category, co
   "eleventyComputed": {
     "title": "Category: {{ category }}"
   },
-  "permalink": "category/{{ category | slugify }}/{% if pagination.pageNumber != 0 %}page-{{ pagination.pageNumber }}/{% endif %}"
+  "permalink": "categories/{{ category | slugify }}/{% if pagination.pageNumber != 0 %}page-{{ pagination.pageNumber }}/{% endif %}"
 }
 ---
 
-<p>All posts for a single category, in reverse chronological order.</p>
+{% include 'pagination-count.html' %}
 
-{% for post in catposts reversed %}
-  <div>
-    <a href="{{post.url}}">{{ post.data.title }}</a>, posted {{ post.date | niceDate }}
-    {% excerpt post %}
-  </div>
-{% endfor %}
+{{ description }}
 
-<p>
-  {% if pagination.href.previous %}
-    <button type="button" onclick="location.href='{{ pagination.href.previous }}'">Previous</button>
-  {% endif %}
-  {% if pagination.href.next %}
-    <button type="button" onclick="location.href='{{ pagination.href.next }}'">Next</button>
-  {% endif %}
-</p>
+<p>This page lists all posts in the category, in reverse chronological order.</p>
+
+<ul class="posts">
+  {% for post in catposts %}
+    <li>
+      <h4>
+        <a href="{{post.url}}" style="cursor: pointer">{{ post.data.title }}</a>
+      </h4>
+      Posted {{ post.date | readableDate }}
+      {% if post.data.categories.length > 0 %}
+        in
+        {% for cat in post.data.categories %}
+          <a href="/categories/{{ cat | slugify }}">{{ cat }}</a>
+          {%- unless forloop.last %},
+          {% endunless %}
+        {% endfor %}
+      {% endif %}
+      <br/>
+      {% if post.data.description %}
+        {{ post.data.description }}
+      {% else %}
+        {% excerpt post %}
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
+
+{% include 'pagination-nav.html' %}
 ```
 
 The first thing you'll likely notice is that the module converted the front matter from YAML to JSON format. It did this because the ability to have separate paginated pages requires filtering on the fly to only generate pages for the selected category. The module does this using the Eleventy Pagination `before` callback function. 
@@ -195,7 +226,7 @@ At this point, you should open the generated configuration file (called `11ty-ca
 
 ```json
 {
-  "categoryFolder": "src/category",
+  "categoriesFolder": "src/categories",
   "dataFileName": "category-meta.json",
   "dataFolder": "src/_data",
   "postsFolder": "src/posts",
@@ -207,7 +238,7 @@ The options for this configuration file are described below:
 
 | Property           | Description                                   |
 | ------------------ | --------------------------------------------- |
-| `categoryFolder`   | The project source folder where the module places the individual category pages. For navigation simplicity, the module defaults to `category`. |
+| `categoriesFolder`   | The project source folder where the module places the individual category pages. For navigation simplicity, the module defaults to `categories`. |
 | `dataFileName`     | The name of the global data file generated by the module. defaults to `category-meta.json`. |
 | `dataFolder`       | The project source folder for global data files. Defaults to `src/_data`. Update this value if you use a different structure for your Eleventy projects. |
 | `postsFolder`      | The project source folder for post files. Defaults to `src/posts`. Update this value if you use a different structure for your Eleventy projects. |
@@ -239,9 +270,9 @@ Building category list...
 Deleting unused categories (from previous runs)
 Identified 6 categories
 Writing categories list to D:\dev\node\11ty-cat-pages\src\_data\category-meta.json
-Writing category page: D:\dev\node\11ty-cat-pages\src\category\cats.liquid
-Writing category page: D:\dev\node\11ty-cat-pages\src\category\dog.liquid
-Writing category page: D:\dev\node\11ty-cat-pages\src\category\turtles.liquid
+Writing category page: D:\dev\node\11ty-cat-pages\src\categories\cats.liquid
+Writing category page: D:\dev\node\11ty-cat-pages\src\categories\dog.liquid
+Writing category page: D:\dev\node\11ty-cat-pages\src\categories\turtles.liquid
 ```
 
 Looking in the project folder, you should now see:
@@ -322,16 +353,19 @@ layout: generic
 
 <p>View all posts for a particular category by clicking on one of the categories listed below. There are {{ categories.length }} categories on the site today.</p>
 
-{% for catData in categories %}
-  <p>
-    <a href="{{ "/" | htmlBaseUrl }}category/{{ catData.category | slugify }}">{{ catData.category }}</a>
-    ({{ catData.count }} posts)
-    {% if catData.description %}
-      <br/>
-      {{ catData.description }}
-    {% endif %}
-  </p>
-{% endfor %}
+<ul class="posts">
+  {% for catData in categories %}
+    <li>
+      <h4>
+        <a href="{{ "/" | htmlBaseUrl }}categories/{{ catData.category | slugify }}/">{{ catData.category }}</a>
+      </h4>
+      Count: {{ catData.count }} |
+      {% if catData.description %}
+        {{ catData.description }}
+      {% endif %}
+    </li>
+  {% endfor %}
+</ul>
 ```
 ### Getting Help Or Making Changes
 

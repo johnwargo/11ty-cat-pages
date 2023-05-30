@@ -1,5 +1,5 @@
 export type ConfigObject = {
-  categoryFolder: string;
+  categoriesFolder: string;
   dataFileName: string;
   dataFolder: string;
   postsFolder: string;  
