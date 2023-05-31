@@ -1,11 +1,5 @@
 # Changelog
 
-## 20230531
-
-Renamed repository to help avoid confusion between this CLI module and a JavaScript module with a similar name. Other than that, everything works the same.
-
-I'm sorry, I'll stop making breaking changes now.
-
 ## 20230530
 
 Breaking change (sorry) Changed `category` to `categories` in the configuration file to align this with how it works in johnwargo.com (and makes more sense syntactically anyway)

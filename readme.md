@@ -28,7 +28,7 @@ Eleventy (today) doesn't allow you to generate nested pages with pagination at b
 To install the command globally, so its available to any project, open a terminal window or command prompt and execute the following command:
 
 ```shell
-npm install -g eleventy-category-pages-cli
+npm install -g eleventy-category-pages
 ```
 
 Once you complete that step, you have at your disposal a `11ty-cat-pages` command you can use to do all those things described in the opening section. 
@@ -36,7 +36,7 @@ Once you complete that step, you have at your disposal a `11ty-cat-pages` comman
 To access the module as part of an automated build process in your Eleventy project, open a terminal window or command prompt pointing to your Eleventy project's root folder and execute the following command:
 
 ```shell
-npm install eleventy-category-pages-cli
+npm install eleventy-category-pages
 ```
 
 With this in place you can modify your project's `package.json` file and add the `11ty-cat-pages` command to any of the project's npm scripts.
