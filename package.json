@@ -1,6 +1,6 @@
 {
   "name": "eleventy-category-pages",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Generates Eleventy project category pages and data file",
   "author": "John M. Wargo",
   "license": "MIT",
