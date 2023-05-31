@@ -1,12 +1,12 @@
 {
-  "name": "eleventy-category-pages",
+  "name": "eleventy-category-pages-cli",
   "version": "0.0.10",
   "description": "Generates Eleventy project category pages and data file",
   "author": "John M. Wargo",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/johnwargo/eleventy-category-pages"
+    "url": "https://github.com/johnwargo/eleventy-category-pages-cli"
   },
   "type": "module",
   "main": "eleventy-cat-pages.js",
