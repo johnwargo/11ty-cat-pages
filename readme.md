@@ -1,4 +1,4 @@
-# Eleventy Category Pages CLI
+# Eleventy Category Pages
 
 Preprocessor for [Eleventy](https://www.11ty.dev/) sites that helps developers implement a categories page with descriptions plus separate paginated pages for each category.
 
