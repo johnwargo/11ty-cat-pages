@@ -2,6 +2,8 @@
 
 Preprocessor for [Eleventy](https://www.11ty.dev/) sites that helps developers implement a categories page with descriptions plus separate paginated pages for each category.
 
+**Note:** There is a better, more Eleventy-native way to do this using [Eleventy Generate Category Pages](https://www.npmjs.com/package/eleventy-generate-category-pages) inside the Eleventy build process (running in a `before` event). 
+
 The module is a command-line utility that:
 
 1. Recursively reads all the posts in a specified directory 
