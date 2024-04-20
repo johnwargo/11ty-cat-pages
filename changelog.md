@@ -2,7 +2,7 @@
 
 ## 20240420
 
-Fixed an error where a category without a description was assigned the description from another catrgory.
+Fixed an error where a category without a description was assigned the description from another category.
 
 ## 20230530
 
