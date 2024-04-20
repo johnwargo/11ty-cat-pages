@@ -246,7 +246,7 @@ validateConfig(validations)
                 console.table(categories);
         }
         else {
-            log.info('Category data file not found, will create a new one');
+            log.info('Category data file not found, creating...');
         }
         fileList = getFileList(configObject.postsFolder, debugMode);
         if (fileList.length < 1) {
@@ -277,15 +277,14 @@ validateConfig(validations)
         const categoriesFolder = path.join(process.cwd(), configObject.categoriesFolder);
         log.debug(`Emptying categories folder: ${categoriesFolder}`);
         fs.emptyDirSync(categoriesFolder);
-        categories.forEach(function (item) {
-            if (item.category === "")
-                return;
+        categories.forEach(item => {
             log.debug(`\nProcessing category: ${item.category}`);
+            if (debugMode)
+                console.dir(item);
             let pos1 = templateFile.search(YAML_PATTERN);
             if (pos1 > -1) {
                 frontmatter.category = item.category;
-                if (item.description)
-                    frontmatter.description = item.description;
+                frontmatter.description = item.description ? item.description : '';
                 if (item.category == UNCATEGORIZED_STRING) {
                     frontmatter.pagination.before = `function(paginationData, fullData){ let data = paginationData.filter((item) => item.data.categories.length == 0); return Array.from(data).sort((a, b) => { return a.date < b.date ? 1 : -1; });}`;
                 }

@@ -1,5 +1,9 @@
 # Changelog
 
+## 20240420
+
+Fixed an error where a category without a description was assigned the description from another catrgory.
+
 ## 20230530
 
 Breaking change (sorry) Changed `category` to `categories` in the configuration file to align this with how it works in johnwargo.com (and makes more sense syntactically anyway)

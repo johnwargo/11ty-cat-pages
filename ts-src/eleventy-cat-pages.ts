@@ -145,7 +145,8 @@ function buildCategoryList(
       var catArray = categoriesString.split(',');
       // loop through the array
       for (var cat of catArray) {
-        var category = cat.trim();  // Remove leading and trailing spaces        
+        // Remove leading and trailing spaces        
+        var category = cat.trim();
         // Does the category already exist in the list?
         var index = categories.findIndex((item) => item.category === category);
         if (index < 0) {
@@ -319,7 +320,7 @@ validateConfig(validations)
         if (categories.length > 0) categories.forEach((item) => item.count = 0);
         if (debugMode) console.table(categories);
       } else {
-        log.info('Category data file not found, will create a new one');
+        log.info('Category data file not found, creating...');
       }
 
       fileList = getFileList(configObject.postsFolder, debugMode);
@@ -358,22 +359,21 @@ validateConfig(validations)
       fs.emptyDirSync(categoriesFolder);
 
       // create separate pages for each category
-      categories.forEach(function (item) {
-        // why would this ever happen?
-        if (item.category === "")
-          return;
-
+      // categories.forEach(function (item) {
+      categories.forEach(item => {
         log.debug(`\nProcessing category: ${item.category}`);
+        if (debugMode) console.dir(item);
+
         let pos1 = templateFile.search(YAML_PATTERN);
         if (pos1 > -1) {
           // We have a match for the YAML frontmatter (which makes sense)
           // replace the category field in the frontmatter
           frontmatter.category = item.category;
-          if (item.description) frontmatter.description = item.description;
+          // if (item.description) frontmatter.description = item.description;
+          frontmatter.description = item.description ? item.description : '';
           if (item.category == UNCATEGORIZED_STRING) {
             // deal with uncategorized posts differently, categories field is blank
-            frontmatter.pagination.before = `function(paginationData, fullData){ let data = paginationData.filter((item) => item.data.categories.length == 0); return Array.from(data).sort((a, b) => { return a.date < b.date ? 1 : -1; });}`
-            //  frontmatter.pagination.before = `function(paginationData, fullData){ return paginationData.filter((item) => item.data.categories.length == 0);
+            frontmatter.pagination.before = `function(paginationData, fullData){ let data = paginationData.filter((item) => item.data.categories.length == 0); return Array.from(data).sort((a, b) => { return a.date < b.date ? 1 : -1; });}`           
             // }`
           } else {
             frontmatter.pagination.before = `function(paginationData, fullData){ let data = paginationData.filter((item) => item.data.categories.includes('${item.category}')); return Array.from(data).sort((a, b) => { return a.date < b.date ? 1 : -1; });}`
